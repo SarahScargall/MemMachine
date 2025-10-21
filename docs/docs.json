@@ -12,6 +12,13 @@
     "tagId": "GTM-WDX7ZBC7"
   }
 },
+{
+  "ignore": [
+    ".cursor",
+    ".vscode",
+    "node_modules"
+  ]
+}
   "favicon": "favicon.ico",
   "navigation": {
     "tabs": [
