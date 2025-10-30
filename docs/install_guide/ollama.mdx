@@ -4,15 +4,164 @@ description: "Guide to configure MemMachine to use Ollama models."
 icon: "paw"
 ---
 
+## Prerequisites
 
-## Installing MemMachine with Ollama Models
-
-Here's where instructions for installation would go.
+Before you begin the installation and configuration of MemMachine, you must ensure that your local environment is ready by having Ollama installed and the necessary models downloaded.
 
 
-## Configuring MemMachine to use Ollama
 
-Here's where ollama specific configuration instructions would go.
+### 1. Ollama Service
+
+MemMachine connects directly to **Ollama** using its local API, which must be running in the background.
+
+- **Installation:** If you do not yet have Ollama installed, please follow the official setup guide.
+
+  - **Resource:** [Download Ollama on macOS](https://ollama.com/download)
+
+- **Start the Service:** Once installed, start the Ollama service to make the local API available. Open your terminal or command prompt and run:
+
+  ```bash
+  ollama serve
+  ```
+
+- **Verification:** You can confirm the service is running successfully by opening your web browser and navigating to the following address: `http://localhost:11434`
+    You should see the Ollama web interface if the service is active.
+
+### 2. Required Ollama Models
+
+MemMachine requires **two** types of models to function: a Large Language Model (LLM) for generative tasks and an embedding model for converting text into vectors (e.g., for retrieval-augmented generation).
+
+You must download these models to your local Ollama repository **before** starting MemMachine.
+
+- **Download Models:** Use the `ollama pull` command to download the models you want.
+
+| **Model Type**                 | **Example Model ID** | **Command to Run**             |
+| ------------------------------ | -------------------- | ------------------------------ |
+| **Large Language Model (LLM)** | Llama 3              | `ollama pull llama3`           |
+| **Embedding Model**            | Nomic Embed Text     | `ollama pull nomic-embed-text` |
+
+<Note> You can choose any compatible LLM (like `mixtral`, `gemma`, etc.) and embedding model available on Ollama, but the examples above are recommended starting points.</Note>
+
+- **View Downloaded Models:** To see a list of all models currently available in your local Ollama repository, run:
+
+  ```bash
+  ollama list
+  ```
+
+## Installation: QuickStart Configuration
+
+The installation script will automatically guide you through setting up your **Large Language Model (LLM) provider**. When prompted, you **must** select **Ollama** to integrate with **Ollama**.
+
+Your prompt input should match the following example:
+
+```bash
+[PROMPT] Which provider would you like to use? (OpenAI/Bedrock/Ollama) [OpenAI]: Ollama
+[INFO] Selected provider: OLLAMA
+```
+
+Ollama Configuration and Model Choices
+You’ll then be prompted to select:
+
+	•	Ollama base URL (default: http://host.docker.internal:11434/v1)
+
+	•	Choice of LLM (Large Language Model)
+
+            example: llama3
+
+	•	Choice of Embedding Model
+
+            example: nomic-embed-text
+
+<Note> If you are unsure about model selection, simply press **Enter** at the respective prompts to use the recommended default options.</Note>
+
+Congratulations!  You have now successfully deployed MemMachine using AWS Bedrock!
+
+## Manually Configuring MemMachine to use Ollama
+
+If you already have MemMachine installed and wish to switch to Ollama manually, you can do so by updating the configuration file, `./cfg.yml`.
+
+<Note> Within the 'cfg.yml' file, make sure duplicate models are removed.  IE, if you are using the ollama_model, ensure that any other model configurations (like openai_model) are deleted to avoid conflicts. </Note>
+
+Below is an example configuration snippets for setting up AWS Bedrock as different components of MemMachine:
+
+### LLM Provider
+
+To set your LLM Model for Bedrock, you will want to use the following fields:
+
+| Parameter                     | Required? | Default           | Description                                                       |
+| ----------------------------- | --------- | ----------------- | ----------------------------------------------------------------- |
+| `model_vendor`                | Yes       | "amazon-bedrock"  | The vendor of the model (e.g., `openai`, `amazon-bedrock`).       |
+| `region`                      | Yes       | N/A               | The AWS region for the Bedrock model (e.g., `us-west-2`).         |
+| `aws_access_key_id`           | Yes       | N/A               | The AWS access key ID for Bedrock authentication.                 |
+| `aws_secret_access_key`       | Yes       | N/A               | The AWS secret access key for Bedrock authentication.             |
+| `model_id`                    | Yes       | N/A.              | The name of the model to use (e.g., `openai.gpt-oss-20b-1:0`).    |
+
+Here's an example of what the Amazon Bedrock LLM Model configuration would look like in `cfg.yml`:
+
+```yaml
+Model:
+  aws_model:
+    model_vendor: "amazon-bedrock"
+    region: "us-west-2"
+    aws_access_key_id: <AWS_ACCESS_KEY_ID>
+    aws_secret_access_key: <AWS_SECRET_ACCESS_KEY>
+    model_id: "openai.gpt-oss-20b-1:0"
+    ```
+
+### Embedder Configuration
+
+To set your Embedding Model for Bedrock, you will want to use the following fields:
+| Parameter                            | Required? | Default          | Description                                                                           |
+| ------------------------------------ | ---------- | --------------- | ------------------------------------------------------------------------------------- |
+| `embedder:`                          | Yes        | N/A             | The embedder block in the configuration.                                              |
+| `aws_embedder_id:`                   | Yes        | N/A             | Tag you can use if setting AWS Bedrock for your Embedder.                             |
+| `name:`                              | Yes        | 'amazon-bedrock'| The vendor name of your embedder.                                                     |
+| `config:`                            | Yes        | N/A             | Configuration block for the embedder.                                                 |
+| `region:`                            | Yes        | N/A             | The AWS region for the Bedrock embedder (e.g., `us-west-2`).                          |
+| `aws_access_key_id:`                 | Yes        | N/A             | The AWS access key ID for Bedrock authentication.                                     |
+| `aws_secret_access_key:`             | Yes        | N/A             | The AWS secret access key for Bedrock authentication.                                 |
+| `model_id:`                          | Yes        | N/A             | The Bedrock model ID to use for the embedder (e.g., amazon.titan-embed-text-v2:0').   |
+| `similarity_metric:`                 | Yes        | N/A             | The similarity metric to use for embedding comparisons (e.g., `cosine`, `euclidean`). |
+
+Here's an example of what the Amazon Bedrock embedder configuration would look like in `cfg.yml`:
+```yaml
+embedder:
+    aws_embedder_id:
+        name: 'amazon-bedrock'
+        config:
+        region: "us-west-2"
+        aws_access_key_id: <AWS_ACCESS_KEY_ID>
+        aws_secret_access_key: <AWS_SECRET_ACCESS_KEY>
+        model_id: "amazon.titan-embed-text-v2:0"
+        similarity_metric: "cosine"
+```
+
+### Reranker Configuration
+
+To set your Reranker Model for Bedrock, you will want to use the following fields:
+
+| Parameter                            | Required? | Default       | Description                                                  |
+| ------------------------------------ | --------- | ------------- | ------------------------------------------------------------ |
+| `reranker:`                          | Yes       | N/A           | This tag defines the reranker section of the cfg.yml file.   |
+| `aws_reranker_id:`                   | Yes       | N/A           | Tag should you choose to use AWS Bedrock for your Reranker.  |
+| `type:`                              | Yes       | N/A           | The type of reranker to use (e.g., `amazon-bedrock`).        |
+| `region:`                            | Yes       | N/A           | The AWS region for the Bedrock reranker (e.g., `us-west-2`). |
+| `aws_access_key_id:`                 | Yes       | N/A           | The AWS access key ID for Bedrock authentication.            |
+| `aws_secret_access_key:`             | Yes       | N/A           | The AWS secret access key for Bedrock authentication.        |
+| `model_id`                           | Yes       | N/A           | The Bedrock model ID to use for reranking (e.g., `amazon.rerank-v1:0`).|
+
+
+Here's an example of what the Amazon Bedrock reranker configuration would look like in `cfg.yml`:
+
+```yaml
+reranker:
+  aws_reranker_id:
+    type: "amazon-bedrock"
+    region: "us-west-2"
+    aws_access_key_id: <AWS_ACCESS_KEY_ID>
+    aws_secret_access_key: <AWS_SECRET_ACCESS_KEY>
+    model_id: "amazon.rerank-v1:0"
+    ```
 
 
 
