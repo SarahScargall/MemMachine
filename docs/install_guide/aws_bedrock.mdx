@@ -50,7 +50,7 @@ Congratulations!  You have now successfully deployed MemMachine using AWS Bedroc
 
 If you already have MemMachine installed and wish to switch to AWS Bedrock manually, you can do so by updating the configuration file, `./cfg.yml`.
 
-<Note> Within the 'cfg.yml' file, make sure duplicate models are removed.  IE, if you are using the aws_model, ensure that any other model configurations (like openai_model) are deleted to avoid conflicts. </Note>
+<Note> Within the 'cfg.yml' file, make sure duplicate models are removed.  IE, if you are using the aws_model, ensure that any other model configurations (like openai_model) are commented out or deleted to avoid conflicts. </Note>
 
 Below is an example configuration snippets for setting up AWS Bedrock as different components of MemMachine:
 
@@ -136,3 +136,7 @@ reranker:
     ```
 <Note> If you have a GPU configuration, and want to use the cross-encoder reranker, ensure that you keep the `type: cross-encoder` section and `ce_ranker_id` in your `cfg.yml` file. </Note>
 
+With these configurations in place, MemMachine will be set up to use AWS Bedrock for its LLM, embedding, and reranker functionalities. 
+Make sure to restart MemMachine after making these changes to apply the new settings. 
+
+*Need Help?*  Refer to the [Install Guide](./install_guide) for how to start and test your configuration with MemMachine.
