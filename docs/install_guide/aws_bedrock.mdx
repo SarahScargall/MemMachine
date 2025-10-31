@@ -50,7 +50,7 @@ Congratulations!  You have now successfully deployed MemMachine using AWS Bedroc
 
 If you already have MemMachine installed and wish to switch to AWS Bedrock or change models manually, you can do so by updating the configuration file, `cfg.yml`.
 
-<Note> Within the 'cfg.yml' file, make sure duplicate models are commented out or removed.  IE, if you are using the aws_model, ensure that any other model configurations (like openai_model) are commented out or deleted to avoid conflicts. </Note>
+<Note> Within the 'cfg.yml' file, make sure duplicate models are commented out or removed.  For example, if you are using the aws_model, ensure that any other model configurations (like openai_model) are commented out or deleted to avoid conflicts. </Note>
 
 We will walk you through the necessary configuration changes for each component: LLM Provider, Embedder, and Reranker.  After that, we'll show you how to use parameters you've already set to fill out your Memory section.
 
@@ -154,25 +154,25 @@ Here is a translation of the existing fields we've already covered and where you
 | `long_term_memory: reranker`      | `reranker: aws_reranker_id`   |  `aws_reranker_id`  | The Tag you defined for your AWS Reranker Config Block  |
 | `profile_memory: llm_model`       | `Model: aws_model`            |  `aws_model`        | The Tag you defined for your AWS LLM Model Config Block |
 | `profile_memory: embedding_model` | `embedder: aws_embedder_id`   |  `aws_embedder_id`  | The Tag you defined for your AWS Embedder Config Block  |
-| `session_memory: model_name`      | `Model: aws_model`            |  `aws_embedder_id`  | The Tag you defined for your AWS LLM Model Config Block |
+| `session_memory: model_name`      | `Model: aws_model`            |  `aws_model`        | The Tag you defined for your AWS LLM Model Config Block |
 
 Here's an example of how the memory configuration would look in `cfg.yml`:
 ```yaml
 long_term_memory:
   derivative_deriver: sentence
   metadata_prefix: "[$timestamp] $producer_id: "
-  embedder: aws_embedder_id  <<<<
-  reranker: aws_reranker_id  <<<<
+  embedder: aws_embedder_id
+  reranker: aws_reranker_id
   vector_graph_store: my_storage_id
 
 profile_memory:
-  llm_model: aws_model <<<<
-  embedding_model: oaws_reranker_id <<<<
+  llm_model: aws_model
+  embedding_model: aws_reranker_id
   database: profile_storage
   prompt: profile_prompt
 
 sessionMemory:
-  model_name: aws_model <<<<
+  model_name: aws_model
   message_capacity: 500
   max_message_length: 16000
   max_token_num: 8000
