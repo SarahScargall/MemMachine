@@ -429,8 +429,13 @@
         "tags": [
           "MCP Tools"
         ],
-        "summary": "Tool: Add Memory (Unified)",
-        "description": "Adds a memory episode directly using the full session data provided in the `NewEpisode` object to **both** episodic and profile memory. This is an LLM tool.",
+        "summary": "Add Memory (Unified)",
+        "x-mint": {
+          "mcp": {
+            "enabled": true
+          }
+        },
+        "description": "TOOL: Adds a memory episode directly using the full session data provided in the `NewEpisode` object to **both** episodic and profile memory. This is an LLM tool.",
         "operationId": "mcp_add_session_memory",
         "requestBody": {
           "required": true,
@@ -475,8 +480,13 @@
         "tags": [
           "MCP Tools"
         ],
-        "summary": "Tool: Add Episodic Memory",
-        "description": "Adds a memory episode directly using the full session data provided in the `NewEpisode` object **only to episodic memory**. This is an LLM tool.",
+        "summary": "Add Episodic Memory",
+        "x-mint": {
+          "mcp": {
+            "enabled": true
+          }
+        },
+        "description": "TOOL: Adds a memory episode directly using the full session data provided in the `NewEpisode` object **only to episodic memory**. This is an LLM tool.",
         "operationId": "mcp_add_episodic_memory",
         "requestBody": {
           "required": true,
@@ -521,8 +531,13 @@
         "tags": [
           "MCP Tools"
         ],
-        "summary": "Tool: Add Profile Memory",
-        "description": "Adds a memory episode directly using the full session data provided in the `NewEpisode` object **only to profile memory**. This is an LLM tool.",
+        "summary": "Add Profile Memory",
+        "x-mint": {
+          "mcp": {
+            "enabled": true
+          }
+        },
+        "description": "TOOL: Adds a memory episode directly using the full session data provided in the `NewEpisode` object **only to profile memory**. This is an LLM tool.",
         "operationId": "mcp_add_profile_memory",
         "requestBody": {
           "required": true,
@@ -567,8 +582,13 @@
         "tags": [
           "MCP Tools"
         ],
-        "summary": "Tool: Search Episodic Memory",
-        "description": "Searches **only episodic memory** for the provided query using the full session data in the request body. This is an LLM tool.",
+        "summary": "Search Episodic Memory",
+        "x-mint": {
+          "mcp": {
+            "enabled": true
+          }
+        },
+        "description": "TOOL: Searches **only episodic memory** for the provided query using the full session data in the request body. This is an LLM tool.",
         "operationId": "mcp_search_episodic_memory",
         "requestBody": {
           "required": true,
@@ -599,8 +619,13 @@
         "tags": [
           "MCP Tools"
         ],
-        "summary": "Tool: Search Profile Memory",
-        "description": "Searches **only profile memory** for the provided query using the full session data in the request body. This is an LLM tool.",
+        "summary": "Search Profile Memory",
+        "x-mint": {
+          "mcp": {
+            "enabled": true
+          }
+        },
+        "description": "TOOL: Searches **only profile memory** for the provided query using the full session data in the request body. This is an LLM tool.",
         "operationId": "mcp_search_profile_memory",
         "requestBody": {
           "required": true,
@@ -631,8 +656,13 @@
         "tags": [
           "MCP Tools"
         ],
-        "summary": "Tool: Search Memory (Unified)",
-        "description": "Searches **both** episodic and profile memories for the provided query using the full session data in the request body. This is an LLM tool.",
+        "summary": "Search Memory (Unified)",
+        "x-mint": {
+          "mcp": {
+            "enabled": true
+          }
+        },
+        "description": "TOOL: Searches **both** episodic and profile memories for the provided query using the full session data in the request body. This is an LLM tool.",
         "operationId": "mcp_search_session_memory",
         "requestBody": {
           "required": true,
@@ -663,8 +693,13 @@
         "tags": [
           "MCP Tools"
         ],
-        "summary": "Tool: Delete Session Data (Self-Contained)",
-        "description": "Deletes all data associated with the provided session data. This is an LLM tool.",
+        "summary": "Delete Session Data (Self-Contained)",
+        "x-mint": {
+          "mcp": {
+            "enabled": true
+          }
+        },
+        "description": "TOOL: Deletes all data associated with the provided session data. This is an LLM tool.",
         "operationId": "mcp_delete_session_data",
         "requestBody": {
           "required": true,
@@ -709,8 +744,13 @@
         "tags": [
           "MCP Tools"
         ],
-        "summary": "Tool: Delete All Data (Contextual)",
-        "description": "Deletes all data associated with the *currently active session* stored in the MCP context. This LLM tool does not require a request body.",
+        "summary": "Delete All Data (Contextual)",
+        "x-mint": {
+          "mcp": {
+            "enabled": true
+          }
+        },
+        "description": "TOOL: Deletes all data associated with the *currently active session* stored in the MCP context. This LLM tool does not require a request body.",
         "operationId": "mcp_delete_data",
         "requestBody": {
           "required": false,
@@ -753,8 +793,13 @@
         "tags": [
           "MCP Tools"
         ],
-        "summary": "Resource: All Memory Sessions",
-        "description": "Retrieves all memory sessions as an LLM resource.",
+        "summary": "All Memory Sessions",
+        "x-mint": {
+          "mcp": {
+            "enabled": true
+          }
+        },
+        "description": "RESOURCE: Retrieves all memory sessions as an LLM resource.",
         "operationId": "mcp_get_sessions",
         "responses": {
           "200": {
@@ -775,8 +820,13 @@
         "tags": [
           "MCP Tools"
         ],
-        "summary": "Resource: Get User Sessions",
-        "description": "Retrieves all sessions for a specific user as an LLM resource.",
+        "summary": "Get User Sessions",
+        "x-mint": {
+          "mcp": {
+            "enabled": true
+          }
+        },
+        "description": "RESOURCE: Retrieves all sessions for a specific user as an LLM resource.",
         "operationId": "mcp_get_user_sessions",
         "parameters": [
           {
@@ -808,8 +858,13 @@
         "tags": [
           "MCP Tools"
         ],
-        "summary": "Resource: Get Group Sessions",
-        "description": "Retrieves all sessions for a specific group as an LLM resource.",
+        "summary": "Get Group Sessions",
+        "x-mint": {
+          "mcp": {
+            "enabled": true
+          }
+        },
+        "description": "RESOURCE: Retrieves all sessions for a specific group as an LLM resource.",
         "operationId": "mcp_get_group_sessions",
         "parameters": [
           {
@@ -841,8 +896,13 @@
         "tags": [
           "MCP Tools"
         ],
-        "summary": "Resource: Get Agent Sessions",
-        "description": "Retrieves all sessions for a specific agent as an LLM resource.",
+        "summary": "Get Agent Sessions",
+        "x-mint": {
+          "mcp": {
+            "enabled": true
+          }
+        },
+        "description": "RESOURCE: Retrieves all sessions for a specific agent as an LLM resource.",
         "operationId": "mcp_get_agent_sessions",
         "parameters": [
           {
@@ -862,6 +922,79 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/AllSessionsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/mcp/search_session_memory_embedding": {
+      "post": {
+        "tags": [
+          "MCP Tools"
+        ],
+        "summary": "Search Memory (Unified by Embedding)",
+        "x-mint": {
+          "mcp": {
+            "enabled": true
+          }
+        },
+        "description": "TOOL: Searches **both** episodic and profile memories using a raw embedding vector instead of a text query. The vector is provided in the `SearchQuery`'s `query` field, which should be an array of numbers. This is an LLM tool.",
+        "operationId": "mcp_search_session_memory_embedding",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SearchQuery"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "A search result object.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SearchResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/mcp/update_session": {
+      "post": {
+        "tags": [
+          "MCP Tools"
+        ],
+        "summary": "Update Session Context",
+        "x-mint": {
+          "mcp": {
+            "enabled": true
+          },
+        "description": "TOOL: Creates a new session or updates an existing session's context (e.g., adding an agent/user ID). Primarily used by the LLM tool to manage the current active session.",
+        "operationId": "mcp_update_session",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SessionData"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The updated or newly created MemorySession object.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MemorySession"
                 }
               }
             }
@@ -967,8 +1100,18 @@
             "description": "The session context for the search."
           },
           "query": {
-            "type": "string",
-            "description": "The natural language query or concept."
+            "description": "The natural language query (string) or a raw embedding vector (array of numbers).",
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                }
+              }
+            ]
           },
           "filter": {
             "type": "object",
@@ -1076,4 +1219,5 @@
       }
     }
   }
+}
 }
