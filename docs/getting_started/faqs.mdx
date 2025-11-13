@@ -11,6 +11,14 @@ Welcome to our FAQ section! We've put together a list of common questions about 
 These questions may change or grow over time as we continue to develop and refine MemMachine. Check back often for the latest updates!
 
 <AccordionGroup>
+    <Accordion title="Can I give multiple agents a shared memory?">
+        **Yes.** You can connect multiple agents to the same MemMachine instance to create a shared, central memory space. We provide the tools for this connection, allowing you to define the shared context based on your application's needs.
+    </Accordion>
+    <Accordion title="Who can access or view stored memories?">
+        The visibility of memories is completely **developer-controlled** and depends on the context IDs (`user_id`, `session_id`, `group_id`) you assign when storing or retrieving data.
+        MemMachine's API is designed to support two primary scenarios:
+            1. **Isolated Memories (Default):** By using a unique `user_id` and `session_id` for each conversation, you ensure that memories are isolated to that specific user and context. This is ideal for individual user experiences and maintaining privacy.  When you only have a single user, it is highly recommended to set the group_id equal to the user_id. This ensures that even single-user memory is stored within a non-default, organized group context, making it easier to manage data isolation and deletion later.
+            2. **Shared Memories (Group Context):** You can connect multiple users and agents to a common `group_id`. This allows every member of that group (e.g., a team or a public chat) to access and contribute to a shared pool of memories and context.
     <Accordion title="What is the core idea behind MemMachine?">
         At its heart, MemMachine is an **open-source memory layer** for advanced AI agents. The main idea is to give AI applications the ability to learn, store, and recall information from past sessions, which helps them become more personalized and intelligent over time.
     </Accordion>
