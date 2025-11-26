@@ -33,11 +33,25 @@
             "icon": "map",
             "pages": [
               "install_guide/introduction",
-              "install_guide/install_guide",
-              "install_guide/aws_bedrock",
-              "install_guide/ollama"
+              "install_guide/install_guide", 
+              {
+                "group": "Configurations",
+                "pages": [
+                  "install_guide/config/ollama",
+                  "install_guide/config/aws_bedrock"
+                ]
+              }  
             ]
           },
+          {
+            "group": "Integrations",
+            "icon": "puzzle-piece",
+            "pages": [
+              "install_guide/integrate/claude_code_mcp",
+              "install_guide/integrate/GPTStore",
+              "install_guide/integrate/LangGraph"
+            ]
+           },
           {
             "group": "Core Concepts",
             "icon": "brain",
