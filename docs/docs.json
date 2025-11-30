@@ -83,7 +83,13 @@
             ]
           },
           {
-            "group": "FastAPI",
+            "group": "MCP Tools",
+            "pages": [
+              "api_reference/mcp"
+            ]
+          },
+          {
+            "group": "REST API",
             "openapi": "openapi.json",
             "playground": {
               "display": "interactive"
