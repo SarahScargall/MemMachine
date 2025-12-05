@@ -111,6 +111,7 @@
           {
             "group": "PythonSDK Server",
             "pages": [
+              "api_reference/python/server",
               "api_reference/python/episodic_memory",
               "api_reference/python/episodic_memory_manager",
               "api_reference/python/memory_types",
