@@ -1,0 +1,109 @@
+---
+title: "Server Introduction"
+description: "MemMachine Python Server Overview"
+icon: "python"
+---
+
+The **MemMachine Python Server SDK** is the core backend component powering your memory infrastructure. It provides all necessary tools to host, manage, and serve memory storage and retrieval operations—supporting both **short-term conversational memory (episodic)** and **long-term user data (semantic/profile memory)**.
+
+## Server Architecture and Components
+
+The MemMachine Python Server SDK provides the backend memory services that your applications or agents interact with. The architecture is modular, ensuring scalability and clarity between memory types and services.
+![MemMachine Server Architecture](/images/MemMachine_Architecture.png)
+### Key Components
+
+- **Server Client (`server_client`):** Acts as the primary interface to the MemMachine server, managing communication even when client code is running locally on the server machine.
+- **Episodic Memory Store:** Stores short-term conversational memory, linking it to a specific user, agent, and session.
+- **Profile Memory Store:** Stores long-term user attributes and knowledge, persisting across multiple sessions and agents.
+- **LLM Provider (Optional):** Integrates and manages queries for embedding, retrieval, or ranking, primarily used for semantic memory operations.
+- **Network Layer:** Handles all interaction over HTTP/REST, facilitating scalable, multi-agent, and multi-client access.
+
+This modular architecture ensures that server-side code can efficiently create projects, manage sessions, and read/write both short- and long-term memory, all unified through the Python SDK interface.
+
+## Benefits of the Server SDK
+
+The Server SDK is ideal for teams needing maximum control and flexibility over their memory infrastructure.
+
+- **Full Backend Control:** Run the memory service within your own infrastructure (self-hosted, on-prem, or cloud-managed setups).
+- **Unified Memory Store:** Seamlessly manage and serve both short-term (episodic) and long-term (semantic/profile) memories through a single access point.
+- **Plug-and-Play REST Interface:** Exposes a clean, HTTP/REST API that works with any client or language, including the official Python Client SDK.
+- **Scalable & Reliable:** Handles connections, data persistence, and integrated LLM operations (embedding, retrieval, ranking) while ensuring data consistency.
+- **Architectural Flexibility:** Integrates easily with existing load balancers, authentication layers, and external storage or LLM providers.
+
+## Typical Deployment and Usage
+
+The server is designed to be the central hub for all memory operations.
+
+1. **Deployment:** Deploy the server (e.g., via Docker / Docker Compose) to establish a stable memory backend endpoint.
+2. **Configuration:** Configure authentication, storage backends, and LLM integrations (e.g., embedding model, vector store settings) as needed.
+3. **Client Connection:** Connect client applications (using the Python Client SDK or any HTTP-capable client) to the server.
+4. **Interaction:** Allow agents, bots, or services to read and write memory, enabling personalized, context-aware behavior across sessions.
+
+For more information on deploying the MemMachine PythonSDK Server, please check out our [Quickstart Guide](../../getting_started/quickstart)
+
+## Hello World Example
+
+This basic example demonstrates the foundational memory interactions: storing different memory types and executing a unified search operation.
+<Tabs>
+<Tab title="HelloWorld_Server.py">
+```python expandable
+delete me
+```
+</Tab>
+<Tab title="Expected Output">
+```bash
+testtestetest
+```
+</Tab>
+</Tabs>
+
+### Key Demonstrations
+
+- **Profile Memory (Long-Term Storage)**
+  - **Action:** Stored using `profile.upsert(...)`.
+  - **Purpose:** Intended for stable, long-term, and queryable facts (e.g., user preferences, attributes, or traits).
+  - **Context:** Data persists independently of the current session.
+- **Episodic Memory (Short-Term Context)**
+  - **Action:** Stored using `memory.add(...)`.
+  - **Purpose:** Captures short-term conversational events and interaction history.
+  - **Context:** Storage is strictly tied to the specific `agent`, `user`, and `session` context.
+- **Unified Search**
+  - **Action:** Executed via `memory.search(query)`.
+  - **Result:** Automatically returns relevant results from *both* episodic and profile memory based on the server's retrieval configuration (semantic, hybrid embedding, etc.).
+- **Optional: Direct Profile Retrieval**
+  - **Action:** Use `profile.get_all()`.
+  - **Purpose:** Retrieves all structured long-term profile fields, typically used for UI display or debugging.
+
+## Core Concepts
+
+The Python Server SDK exposes several key APIs for managing memories. These are the foundational concepts for understanding server interactions:
+
+### Episodic Memory (`episodic_memory`)
+
+- Manages short-term memory tied to a user, agent, and session.
+- Stores conversation-like events that are context-specific and transient.
+- Main system calls: `add()`, `search()`, `get_all()`.
+
+### Episodic Memory Manager (`episodic_memory_manager`)
+
+- Provides management utilities for episodic memories across multiple sessions or users.
+- Handles session lifecycle, cleanup, and advanced memory queries.
+
+### Profile Memory (`profile_memory`)
+
+- Manages long-term, persistent user memory.
+- Stores attributes like preferences, traits, or other semantic knowledge.
+- Main system calls: `upsert()`, `get_all()`, `delete()`.
+
+### Memory Types (`memory_types`)
+
+- Defines the different types of memories available: episodic, profile, and possibly hybrid semantic stores.
+- Provides a consistent interface for creating, retrieving, and interacting with each memory type.
+
+## Intended Audience
+
+The MemMachine Python Server SDK is best suited for:
+
+- Developers or teams who need to **self-host** their memory backend for maximum control and data privacy.
+- Scenarios where **multiple agents, services, or languages** need to access a shared memory store.
+- Use cases requiring **custom configuration** (storage, LLM provider, scaling, network topology) beyond what a managed solution provides.
