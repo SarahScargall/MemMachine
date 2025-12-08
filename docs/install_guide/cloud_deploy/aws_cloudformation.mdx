@@ -10,25 +10,7 @@ This single-click CloudFormation stack fully provisions a production-grade MemMa
 
 Have the following available and ready:
 1. **AWS Account** with appropriate permissions
-2. **AWS CLI** installed and configured
-- To check your version, use the following commands:
-```bash
-aws --version
-```	
-- **macOS:** `brew install awscli`
-- **Linux:** [AWS CLI Installation Guide](https://aws.amazon.com/cli/)
-
-3. **AWS Credentials Configuration**:
-```bash
-  aws configure 
-    # Enter: 
-    # AWS Access Key ID 
-    # AWS Secret Access Key 
-    # Default region (e.g., us-east-1) 
-    # Default output format (json) 
-  aws sts get-caller-identity
-```
-4. **EC2 Key Pair**
+2. **EC2 Key Pair**
 	 - Fill out with your specific information.
 ```bash
 aws ec2 describe-key-pairs 
@@ -40,13 +22,15 @@ aws ec2 describe-key-pairs
 chmod 400 my-memmachine-key.pem
 ```
 
-5. **OpenAI API Key** — required for embeddings.
+3. **OpenAI API Key** — required for embeddings.
 
-6. **Determine `STACK_NAME`** 
+4. **Determine `STACK_NAME`** 
     - you will need to use the same name for this parameter throughout deployment.  
-    - You can call the file whatever you like.  In this example, we are using `memmachine-ec2-stack`.  If you choose to use a different name, make sure any reference to `memmachine-ec2-stack` is replaced by your chosen stack name.
+    - You can call the file whatever you like.  In this example, we are using `memmachine-ec2-stack` or `your-stack-name`.  
+<Note>If you choose to use a different name, make sure any reference to `memmachine-ec2-stack` or `your-stack-name`is replaced by your chosen stack name.</Note>
 
-7. Cloud Formation Template - *see code block below*
+5. Cloud Formation Template - *see code block below*
+    - Use the copy feature below and paste into your own file
 	- Be sure to fill out witih your specific information where applicable
 
 ```yaml expandable
@@ -619,29 +603,50 @@ Outputs:
 ## Deployment Methods
 <Tabs>
 <Tab title="Method 1: AWS CLI">
+**Prerequisites**:
+
+1. **AWS CLI** installed and configured
+- To check your version, use the following commands:
+```bash
+aws --version
+```	
+- **macOS:** `brew install awscli`
+- **Linux:** [AWS CLI Installation Guide](https://aws.amazon.com/cli/)
+
+2. **AWS Credentials Configuration**:
+```bash
+  aws configure 
+    # Enter: 
+    # AWS Access Key ID 
+    # AWS Secret Access Key 
+    # Default region (e.g., us-east-1) 
+    # Default output format (json) 
+  aws sts get-caller-identity
+```
+**Process**:
 <Note>Make sure to replace `your-cft-template.yaml` , `your-stack-name` and `your-key-pair` with the values you are using.</Note>
 <Steps>
 <Step title="Set Parameters">
 
-<CodeBlock language="bash">
+```bash
 aws configure
-    STACK_NAME="memmachine-ec2-stack" 
+    STACK_NAME="your-stack-name" 
     REGION="us-east-1" 
-    KEY_PAIR="your-key-pair-name" 
+    KEY_PAIR="your-key-pair" 
     POSTGRES_PASSWORD="YourSecurePassword123" 
     NEO4J_PASSWORD="YourSecurePassword123" 
     OPENAI_API_KEY="sk-your-openai-key-here" 
     INSTANCE_TYPE="t3.xlarge" 
     ELASTIC_IP="false" 
     ALLOWED_CIDR="0.0.0.0/0"
-</CodeBlock>
+```
 </Step>
 <Step title="Deploy Stack">
 
-<CodeBlock language="bash">
+```bash
 aws cloudformation create-stack \
     --stack-name $STACK_NAME \
-    --template-body file://memmachine-ec2-cft.yaml \
+    --template-body file://your-cft-template.yaml \
     --parameters ParameterKey=StackName,ParameterValue=$STACK_NAME \
                  ParameterKey=InstanceType,ParameterValue=$INSTANCE_TYPE \
                  ParameterKey=KeyPairName,ParameterValue=$_KEY_PAIR \
@@ -652,28 +657,28 @@ aws cloudformation create-stack \
                  ParameterKey=ElasticIP,ParameterValue=$_ELASTIC_IP \
     --capabilities CAPABILITY_NAMED_IAM \
     --region $REGION
-</CodeBlock>
+```
 </Step>
 <Step title="Monitor Stack">
 
-<CodeBlock language="bash">
+```bash
 aws cloudformation describe-stacks \
    --stack-name $STACK_NAME 
    --region $REGION 
    --query 'Stacks[0].StackStatus' 
    --output text aws cloudformation wait stack-create-complete \  
    --stack-name $STACK_NAME --region $REGION
-</CodeBlock>
+```
 </Step>
 <Step title="Retrieve Outputs">
 
-<CodeBlock language="bash">
+```bash
 aws cloudformation describe-stacks \
 	--stack-name $STACK_NAME 
 	--region $REGION 
 	--query 'Stacks[0].Outputs' 
 	--output table
-</CodeBlock>
+```
 **Expected Outputs include:**
 
 - `ApplicationURL`
@@ -684,18 +689,18 @@ aws cloudformation describe-stacks \
 - `Neo4jBrowserURL`
 </Step>
 <Step title="Test Application">
-<CodeBlock language="bash">
+```bash
 PUBLIC_IP=$(aws cloudformation describe-stacks \
 	--stack-name $STACK_NAME \  
 	--region $REGION \  
 	--query 'Stacks[0].Outputs[?OutputKey==`PublicIP`].OutputValue' \  
 	--output text) sleep 30 curl http://$PUBLIC_IP:8080/health`
-</CodeBlock>
+```
 </Step>
 </Steps>
 </Tab>
 
-<Tab title="Method2: AWS Console GUI">
+<Tab title="Method 2: AWS Console GUI">
 
 Follow these steps to deploy the MemMachine CloudFormation stack entirely through the AWS Console.
 
