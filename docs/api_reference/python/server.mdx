@@ -43,36 +43,169 @@ For more information on deploying the MemMachine PythonSDK Server, please check 
 
 ## Hello World Example
 
-This basic example demonstrates the foundational memory interactions: storing different memory types and executing a unified search operation.
+This basic example demonstrates how to **write and search memories**.
 <Tabs>
-<Tab title="HelloWorld_Server.py">
+<Tab title="hello_world_server.py">
 ```python expandable
-delete me
+import asyncio
+import os
+import sys
+from datetime import datetime, timezone
+from typing import Any
+
+# Ensure we can import memmachine
+sys.path.append(os.getcwd())
+
+from memmachine.main.memmachine import MemMachine, MemoryType
+from memmachine.common.episode_store import EpisodeEntry
+from memmachine.server.api_v2.mcp import initialize_resource
+
+class SessionDataWrapper:
+    """Wrapper to adapt SessionInfo to SessionData protocol."""
+    def __init__(self, session_info: Any):
+        self._info = session_info
+
+    @property
+    def session_key(self) -> str:
+        return self._info.episode_memory_conf.session_key
+
+    @property
+    def user_profile_id(self) -> str | None:
+        return None
+
+    @property
+    def role_profile_id(self) -> str | None:
+        return None
+
+    @property
+    def session_id(self) -> str | None:
+        return self.session_key
+
+async def main():
+    config_file = "configuration.yml"
+    if not os.path.exists(config_file):
+        print(f"Error: Configuration file '{config_file}' not found in the current directory.")
+        print("Please ensure you are running this script from the project root and that 'configuration.yml' exists.")
+        sys.exit(1)
+
+    print(f"Initializing MemMachine using {config_file}...")
+    
+    try:
+        # Initialize MemMachine using the helper from mcp module which handles config loading
+        mem_machine = await initialize_resource(config_file)
+        
+        # Create or get session
+        session_key = "hello_session"
+        print(f"Checking for session: {session_key}")
+        
+        session_info = await mem_machine.get_session(session_key=session_key)
+        if session_info:
+            print(f"Session {session_key} already exists, using it.")
+        else:
+            print(f"Creating session: {session_key}")
+            # Note: create_session might fail if DBs are not reachable
+            session_info = await mem_machine.create_session(session_key=session_key)
+        
+        # Wrap session info to satisfy SessionData protocol
+        session = SessionDataWrapper(session_info)
+        
+        # Add a memory
+        print("Adding memory...")
+        episode = EpisodeEntry(
+            content="Hello World! I am learning MemMachine.",
+            producer_id="user1",
+            producer_role="user",
+            created_at=datetime.now(timezone.utc)
+        )
+        await mem_machine.add_episodes(
+            session_data=session,
+            episode_entries=[episode],
+            target_memories=[MemoryType.Episodic]
+        )
+        
+        # Search memory
+        print("Searching memory...")
+        results = await mem_machine.query_search(
+            session_data=session,
+            query="What am I learning?",
+            limit=1
+        )
+        
+        found = False
+        if results.episodic_memory:
+            # Check short-term memory
+            if results.episodic_memory.short_term_memory and results.episodic_memory.short_term_memory.episodes:
+                print(f"Found in Short Term Memory: {results.episodic_memory.short_term_memory.episodes[0].content}")
+                found = True
+            
+            # Check long-term memory
+            if results.episodic_memory.long_term_memory and results.episodic_memory.long_term_memory.episodes:
+                print(f"Found in Long Term Memory: {results.episodic_memory.long_term_memory.episodes[0].content}")
+                found = True
+                
+        if not found:
+            print("No memory found (might need time to index or mock setup)")
+
+        # Cleanup session
+        print("Cleaning up session...")
+        await mem_machine.delete_session(session)
+        await mem_machine.stop()
+
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        print(f"An error occurred: {e}")
+        print("Ensure Neo4j is running and API keys are set in configuration.yml.")
+
+if __name__ == "__main__":
+    asyncio.run(main())
+
 ```
+
 </Tab>
 <Tab title="Expected Output">
-```bash
-testtestetest
+When running inside the memmachine-app (server) Docker container, the output looks like this:
+```bash expandable
+root@bfd3cd481517:/app# python3 ./hello_world_server.py
+Initializing MemMachine using configuration.yml...
+Checking for session: hello_session
+Creating session: hello_session
+Adding memory...
+2025-12-06 00:39:37,443 [INFO] httpx - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-12-06 00:39:37,474 [INFO] neo4j.notifications - Received notification from DBMS server: <GqlStatusObject gql_status='03N90', status_description='info: cartesian product. The disconnected patterns `(source:SANITIZED_Derivative_u5f_hello_u5f_session {uid: edge.source_uid}), (target:SANITIZED_Episode_u5f_hello_u5f_session {uid: edge.target_uid})` build a cartesian product. A cartesian product may produce a large amount of data and slow down query processing.', position=<SummaryInputPosition line=2, column=1, offset=22>, raw_classification='PERFORMANCE', classification=<NotificationClassification.PERFORMANCE: 'PERFORMANCE'>, raw_severity='INFORMATION', severity=<NotificationSeverity.INFORMATION: 'INFORMATION'>, diagnostic_record={'_classification': 'PERFORMANCE', '_status_parameters': {'pat': '(source:SANITIZED_Derivative_u5f_hello_u5f_session {uid: edge.source_uid}), (target:SANITIZED_Episode_u5f_hello_u5f_session {uid: edge.target_uid})'}, '_severity': 'INFORMATION', '_position': {'offset': 22, 'line': 2, 'column': 1}, 'OPERATION': '', 'OPERATION_CODE': '0', 'CURRENT_SCHEMA': '/'}> for query: 'UNWIND $edges AS edge\nMATCH    (source:SANITIZED_Derivative_u5f_hello_u5f_session {uid: edge.source_uid}),    (target:SANITIZED_Episode_u5f_hello_u5f_session {uid: edge.target_uid})\nCREATE (source)    -[r:SANITIZED_DERIVED_u5f_FROM_u5f_hello_u5f_session {uid: edge.uid}]->    (target)\nSET r += edge.properties'
+Searching memory...
+2025-12-06 00:39:37,480 [INFO] alembic.runtime.migration - Context impl PostgresqlImpl.
+2025-12-06 00:39:37,480 [INFO] alembic.runtime.migration - Will assume transactional DDL.
+2025-12-06 00:39:38,200 [INFO] httpx - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-12-06 00:39:38,669 [INFO] httpx - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+Found in Short Term Memory: Hello World! I am learning MemMachine.
+Cleaning up session...
 ```
 </Tab>
 </Tabs>
 
-### Key Demonstrations
+### Useful Tips for Working in a Docker Container
 
-- **Profile Memory (Long-Term Storage)**
-  - **Action:** Stored using `profile.upsert(...)`.
-  - **Purpose:** Intended for stable, long-term, and queryable facts (e.g., user preferences, attributes, or traits).
-  - **Context:** Data persists independently of the current session.
-- **Episodic Memory (Short-Term Context)**
-  - **Action:** Stored using `memory.add(...)`.
-  - **Purpose:** Captures short-term conversational events and interaction history.
-  - **Context:** Storage is strictly tied to the specific `agent`, `user`, and `session` context.
-- **Unified Search**
-  - **Action:** Executed via `memory.search(query)`.
-  - **Result:** Automatically returns relevant results from *both* episodic and profile memory based on the server's retrieval configuration (semantic, hybrid embedding, etc.).
-- **Optional: Direct Profile Retrieval**
-  - **Action:** Use `profile.get_all()`.
-  - **Purpose:** Retrieves all structured long-term profile fields, typically used for UI display or debugging.
+**Connecting to a running MemMachine Server Container**
+
+To connect to the `memmachine-app` container with an interactive Bash shell, run this from the host:
+```bash
+docker exec -it memmachine-app /bin/bash
+```
+You'll see a new prompt similar to this, which confirms you're inside the container:
+```bash
+root@bfd3cd481517:/app#
+```
+
+**Creating files inside the container**
+
+This method is intended for testing only; it should not be used for developing applications.
+`vim` and other editors are not available. Instead, use:
+```bash
+cat > my_file.py << 'EOF'
+# Paste your code here
+EOF
+``` 
 
 ## Core Concepts
 
