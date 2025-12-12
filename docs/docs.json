@@ -80,7 +80,7 @@
         ]
       },
       {
-        "tab": "API Reference",
+        "tab": "OpenSource API",
         "groups": [
           {
             "group": "Introduction",
@@ -96,15 +96,8 @@
           },
           {
             "group": "REST API",
-            "openapi": "openapi.json",
-            "playground": {
-              "display": "interactive"
+            "openapi": "openapi.json"
             },
-            "examples": {
-              "languages": ["python"],
-              "defaults": "required"
-            }
-          },
           {
             "group": "PythonSDK Client",
             "pages": [
@@ -138,6 +131,19 @@
               "examples/rest",
               "examples/mcp"
             ]
+          }
+        ]
+      },
+      {
+        "tab": "Platform",
+        "groups": [
+          {
+            "group": "Introduction",
+            "pages": ["platform/introduction"]
+          },
+          {
+            "group": "Platform API",
+            "openapi": "platform.openapi.json"
           }
         ]
       }
