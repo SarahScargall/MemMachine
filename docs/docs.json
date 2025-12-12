@@ -142,6 +142,10 @@
             "pages": ["platform/introduction"]
           },
           {
+            "group": "User Guide",
+            "pages": ["platform/login_register"]
+          },
+          {
             "group": "Platform API",
             "openapi": "platform.openapi.json"
           }
