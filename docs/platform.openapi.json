@@ -13,7 +13,7 @@
   "paths": {
     "/v2/memories": {
       "post": {
-        "summary": "Add Memories",
+        "summary": "Add_Memories",
         "description": "Add memory messages to a project.\n\n    The `types` field in the request specifies which memory types to add to:\n    - If `types` is empty or not provided, memories are added to all types (Episodic and Semantic)\n    - If `types` only contains `\"episodic\"`, memories are added only to Episodic memory\n    - If `types` only contains `\"semantic\"`, memories are added only to Semantic memory\n    - If `types` contains both, memories are added to both types\n\n    Each memory message represents a discrete piece of information to be stored\n    in the project's memory system. Messages can include content, metadata,\n    timestamps, and other contextual details.\n\n    The producer field indicates who created the message, while the\n    produced_for field specifies the intended recipient. These fields help\n    provide context for the memory and if provided should be user-friendly names.\n\n    The endpoint accepts a batch of messages to be added in a single request.",
         "operationId": "add_memories_v2_memories_post",
         "requestBody": {
@@ -57,7 +57,7 @@
     },
     "/v2/memories/search": {
       "post": {
-        "summary": "Search Memories",
+        "summary": "Search_Memories",
         "description": "Search memories within a project.\n\n    System returns the top K relevant memories matching the natural language query.\n    The result is sorted by timestamp to help with context.\n\n    The filter field allows for filtering based on metadata key-value pairs.\n    The types field allows specifying which memory types to include in the search.",
         "operationId": "search_memories_v2_memories_search_post",
         "requestBody": {
@@ -101,9 +101,9 @@
     },
     "/v2/memories/list": {
       "post": {
-        "summary": "List Memories",
+        "summary": "List_Memories",
         "description": "List memories within a project.\n\n    System returns a paginated list of memories stored in the project.\n    The page_size and page_num fields control pagination.\n\n    The filter field allows for filtering based on metadata key-value pairs.\n    The type field allows specifying which memory type to list.",
-        "operationId": "list_memories_v2_memories_list_post",
+        "operationId": "plat_list_memories_v2_memories_list_post",
         "requestBody": {
           "content": {
             "application/json": {
@@ -145,9 +145,9 @@
     },
     "/v2/memories/episodic/delete": {
       "post": {
-        "summary": "Delete Episodic Memory",
+        "summary": "Delete_Episodic Memory",
         "description": "Delete episodic memories from a project.\n\n    This operation permanently removes one or more episodic memories from the\n    specified project. You may provide either `episodic_id` to delete a single\n    memory or `episodic_ids` to delete multiple memories in one request.\n    This action cannot be undone.\n\n    If any of the specified episodic memories do not exist, a not-found error\n    is returned for those entries.",
-        "operationId": "delete_episodic_memory_v2_memories_episodic_delete_post",
+        "operationId": "plat_delete_episodic_memory_v2_memories_episodic_delete_post",
         "requestBody": {
           "content": {
             "application/json": {
@@ -182,9 +182,9 @@
     },
     "/v2/memories/semantic/delete": {
       "post": {
-        "summary": "Delete Semantic Memory",
+        "summary": "Delete_Semantic Memory",
         "description": "Delete semantic memories from a project.\n\n    This operation permanently removes one or more semantic memories from the\n    specified project. You may provide either `semantic_id` to delete a single\n    memory or `semantic_ids` to delete multiple memories in one request.\n    This action cannot be undone.\n\n    If any of the specified semantic memories do not exist, a not-found error\n    is returned for those entries.",
-        "operationId": "delete_semantic_memory_v2_memories_semantic_delete_post",
+        "operationId": "plat_delete_semantic_memory_v2_memories_semantic_delete_post",
         "requestBody": {
           "content": {
             "application/json": {
@@ -219,9 +219,9 @@
     },
     "/v2/health": {
       "get": {
-        "summary": "Health Check",
+        "summary": "Health_Check",
         "description": "Health check endpoint to verify server is running.",
-        "operationId": "health_check_v2_health_get",
+        "operationId": "plat_health_check_v2_health_get",
         "responses": {
           "200": {
             "description": "Successful Response",
