@@ -1,7 +1,7 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "MemMachine Server",
+    "title": "MemMachine Platform API Server",
     "description": "REST API server for MemMachine memory system",
     "version": "0.1.0"
    },
