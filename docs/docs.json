@@ -135,23 +135,23 @@
         ]
       },
       {
-        "tab": "Playground",
+        "tab": "Platform",
         "groups": [
           {
             "group": "Introduction",
-            "pages": ["playground/introduction"]
+            "pages": ["platform/introduction"]
           },
           {
             "group": "User Guide",
             "pages": [
-              "playground/login_register",
-              "playground/api_key",
-              "playground/dashboard"
+              "platform/login_register",
+              "platform/api_key",
+              "platform/dashboard"
             ]
           },
           {
-            "group": "Playground API",
-            "openapi": "playground.openapi.json"
+            "group": "Platform API",
+            "openapi": "platform.openapi.json"
           }
         ]
       }
@@ -174,7 +174,7 @@
           "icon": "newspaper"
         },
         {
-          "anchor": "Playground",
+          "anchor": "Platform",
           "href": "https://console.memmachine.ai/",
           "icon": "box-open"
         }
