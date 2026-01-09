@@ -755,19 +755,33 @@ start_services() {
 
     print_info "Pulling and starting MemMachine services..."
     
-    # Unset the memmachine image temporarily; without this, 'docker compose pull' will attempt
-    # to pull ${MEMMACHINE_IMAGE} if it is set, which may not be a remote image.
-    ENV_MEMMACHINE_IMAGE=""
-    # Pull the latest images to ensure we are running the latest version
+    # Determine the target image
     local target_image="${memmachine_image_tmp:-${MEMMACHINE_IMAGE:-memmachine/memmachine:latest}}"
     print_info "Pulling latest images... (Target: $target_image)"
-    $COMPOSE_CMD pull
-    ENV_MEMMACHINE_IMAGE="${memmachine_image_tmp:-}"
+    
+    # Try to pull; if it fails (e.g. local image), warn and proceed with PULL_POLICY=if_not_present
+    # We capture the output to suppress "manifest unknown" errors for local images
+    if pull_output=$(MEMMACHINE_IMAGE="${target_image}" $COMPOSE_CMD pull 2>&1); then
+        # Pull successful
+        echo "$pull_output"
+        export PULL_POLICY="always"
+    else
+        # Pull failed
+        if echo "$pull_output" | grep -q 'manifest unknown'; then
+            # This is the expected error for local-only images
+            print_warning "Image '${target_image}' not found in Docker Hub registry (manifest unknown). Assuming local image."
+        else
+            # Some other error (auth, network, etc) - show it!
+            print_error "Docker pull failed with unexpected error:"
+            echo "$pull_output"
+        fi
+        
+        export PULL_POLICY="if_not_present"
+    fi
 
     # Start services (override the image if specified in memmachine-compose.sh start <image>:<tag>)
-    print_info "Starting containers..."
-    if [ -n "${ENV_MEMMACHINE_IMAGE:-}" ]; then
-        MEMMACHINE_IMAGE="${ENV_MEMMACHINE_IMAGE}" $COMPOSE_CMD up -d
+    if [ -n "${memmachine_image_tmp:-}" ]; then
+        MEMMACHINE_IMAGE="${memmachine_image_tmp}" $COMPOSE_CMD up -d
     else
         $COMPOSE_CMD up -d
     fi
@@ -898,8 +912,10 @@ build_image() {
     fi
 
     # Proceed with build after validation passes
-    print_info "Building $name with '--build-arg GPU=$gpu'"
-    docker build --build-arg GPU=$gpu -t "$name" .
+    name="${name//+/_}"
+    local scm_version=$(git describe --tags --always 2>/dev/null | sed 's/^v//;s/-\([0-9]\+\)-g\([0-9a-f]\+\)/.dev\1+g\2/' || echo "")
+    print_info "Building $name with GPU=$gpu (SCM_VERSION: ${scm_version:-none})"
+    docker build --build-arg GPU=$gpu --build-arg SCM_VERSION="$scm_version" -t "$name" .
 }
 
 # Main execution
