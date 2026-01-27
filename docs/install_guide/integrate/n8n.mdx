@@ -19,8 +19,13 @@ This integration provides two specialized nodes:
     If you are using a self-hosted n8n instance:
     1. Navigate to **Settings > Community Nodes**.
     2. Click **Install a community node**.
+
+    ![Community Nodes Page](./assets/community_nodes_page.png)
+
     3. Enter the package name: `@memmachine/n8n-nodes-memmachine`.
     4. Acknowledge the risk and click **Install**.
+
+    ![Install Community Nodes](./assets/install_community_nodes.png)
   </Step>
 
   <Step title="Configure Your Credentials">
@@ -73,7 +78,9 @@ Connect this node directly to the **Memory** input of a native n8n **AI Agent** 
 
 ## Observability & Tracing
 
-MemMachine nodes support native **OTLP Tracing** for debugging complex agent logic.
+MemMachine nodes support native **OTLP Tracing** for debugging complex agent logic. When enabled, you can visualize memory operations in external tools like Jaeger.
+
+![Jaeger UI Trace Example](./assets/jaeger_ui.png)
 
 | Parameter | Type | Description |
 | :--- | :--- | :--- |
@@ -81,8 +88,6 @@ MemMachine nodes support native **OTLP Tracing** for debugging complex agent log
 | **traceVerbosity** | Options | `minimal`, `normal`, or `verbose`. |
 | **exportToJaeger** | Boolean | If `true`, sends traces to your Jaeger instance. |
 | **jaegerOtlpEndpoint**| String | The endpoint URL (e.g., `http://jaeger:4318/v1/traces`). |
-
-
 
 <Note>
   **Pro-Tip:** When using the **AI Memory Node**, ensure your `agentId` and `userId` are passed consistently across the workflow to ensure the agent's "recognition" of the user remains persistent.
