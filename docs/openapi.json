@@ -286,6 +286,38 @@
         "operationId": "health_check",
         "responses": { "200": { "description": "Successful Response" } }
       }
+    },
+    "/api/v2/metrics": {
+      "get": {
+        "tags": ["System"],
+        "summary": "Metrics",
+        "description": "Expose Prometheus metrics endpoint for system observability.",
+        "operationId": "metrics",
+        "responses": {
+          "200": {
+            "description": "Prometheus metrics (text/plain in production).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "number"
+                  }
+                },
+                "example": {
+                  "memmachine_episodes_total": 42,
+                  "memmachine_semantic_entries": 128
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
