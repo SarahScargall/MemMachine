@@ -43,10 +43,13 @@ Saves a specific content string to long-term memory.
 | Parameter | Type | Description |
 | :--- | :--- | :--- |
 | **orgId / projectId** | String | **Required.** Your unique organization and project identifiers. |
+ **types**          | multiOptions | **Required.** Memory types to use (episodic, semantic) |
 | **producer** | String | **Required.** Who created this message (e.g., "Agent" or "User"). |
 | **producedFor** | String | **Required.** Intended recipient of the message. |
 | **episodeContent**| String | **Required.** The actual message text to store. |
 | **episodeType** | Options | `dialog` (default), `summary`, or `observation`. |
+| **metadata**       | JSON | Additional metadata to associate with the message. |
+| **sessionId**      | String |**Required.** Unique session identifier.  |
 | **groupId** | String | Unique group identifier (defaults to `default`). |
 | **agentId / userId** | String | **Required.** Identifiers for the specific AI agent and user. |
 
@@ -57,10 +60,14 @@ Retrieves historical context to inject into an LLM prompt.
 | :--- | :--- | :--- | :--- |
 | **query** | String | - | **Required.** Natural language query for semantic search. |
 | **limit** | Number | 50 | Maximum number of memory results to return. |
-| **filterBySession**| Boolean | `true` | Restricts results to the current session context. |
+| **filter** | String | - | Filter expression to refine memory search results. |
+| **expandContext** | Number | 0 | Number of extra episodes to include for context.|
 | **enableTemplate** | Boolean | `true` | Renders a formatted context string using a template. |
 | **contextTemplate**| String | - | Markdown template for formatting (uses system default if empty). |
 
+<Note>
+  `default template` refers to teh system's built-in context template.  Users may override it with a custom template.
+</Note>
 ---
 
 ## MemMachine AI Memory Node
