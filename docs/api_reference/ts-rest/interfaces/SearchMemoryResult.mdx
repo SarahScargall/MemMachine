@@ -9,6 +9,7 @@ Fine-tune your semantic search by applying filters, thresholds, and specifying w
 
 | Property | Type | Description |
 | :--- | :--- | :--- |
+<<<<<<< Updated upstream
 | `top_k` | `number` | *Optional.* The maximum number of results to return. Defaults to `10`. |
 | `filter` | `string` | *Optional.* Filter expression to narrow search results based on metadata. |
 | `expand_context` | `number` | *Optional.* Number of extra episodes to include for context. Defaults to `0`. |
@@ -35,6 +36,13 @@ Filters follow the pattern: `metadata.<key> <operator> <value>`
 | **Numerical Range** | `metadata.priority >= 5` |
 | **Logical AND** | `metadata.category = 'finance' AND metadata.verified = true` |
 | **Complex Logic** | `(metadata.source = 'email' OR metadata.source = 'slack') AND metadata.importance > 8` |
+=======
+| **top_k** | `number` | *Optional.* Replaces `limit`. Maximum number of results to return. Defaults to `10`. |
+| **filter** | `string` | *Optional.* Filter expression to narrow search results based on metadata. |
+| **expand_context** | `number` | **New.** Number of extra episodes to include for context. Defaults to `0`. |
+| **score_threshold** | `number` | **New.** Minimum relevance score required to include a memory. |
+| **types** | `MemoryType[]` | *Optional.* Memory types to search. Defaults to `['episodic', 'semantic']`. |
+>>>>>>> Stashed changes
 
 ---
 
