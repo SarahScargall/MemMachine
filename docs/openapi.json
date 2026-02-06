@@ -2,12 +2,12 @@
   "openapi": "3.1.0",
   "info": {
     "title": "MemMachine API",
-    "version": "2.1.0",
+    "version": "2.2.0",
     "description": "Architectural Memory Systems for AI Agents. Specialized in episodic and semantic memory management with strict namespace isolation."
   },
   "servers": [
     {
-      "url": "http://localhost:8080"
+      "url": "http://localhost:8080/api/v2"
     }
   ],
   "tags": [
@@ -21,11 +21,11 @@
     },
     {
       "name": "Semantic Memory",
-      "description": "Advanced semantic structure management (Sets, Categories, Tags)."
+      "description": "Advanced management of semantic sets, categories, templates, and tags."
     },
     {
       "name": "Configuration",
-      "description": "Runtime resource management and system configuration."
+      "description": "Granular runtime resource management and memory settings."
     },
     {
       "name": "System",
@@ -33,20 +33,20 @@
     }
   ],
   "paths": {
-    "/api/v2/projects": {
+    "/projects": {
       "post": {
         "tags": ["Projects"],
         "summary": "Create Project",
-        "description": "Initialize a new project namespace. A project is a container for all episodic and semantic memories for a specific agent or application context.",
         "operationId": "create_project",
+        "description": "Initialize a new project namespace. A project is a container for all episodic and semantic memories for a specific agent or application context.",
         "requestBody": {
           "content": {
             "application/json": {
               "schema": { "$ref": "#/components/schemas/CreateProjectSpec" },
               "example": {
                 "org_id": "acme-corp",
-                "project_id": "customer-support-agent",
-                "description": "Main memory store for the tier-1 support bot",
+                "project_id": "agent-smith-v1",
+                "description": "Primary memory store for customer support agent",
                 "config": {
                   "embedder": "openai-text-3-small",
                   "reranker": "cohere-rerank-english-v3.0"
@@ -62,17 +62,17 @@
         }
       }
     },
-    "/api/v2/projects/delete": {
+    "/projects/delete": {
       "post": {
         "tags": ["Projects"],
         "summary": "Delete Project",
-        "description": "Permanently delete a project and all associated memories (episodic and semantic). This action cannot be undone.",
         "operationId": "delete_project",
+        "description": "Permanently delete a project and all associated memories (episodic and semantic). This action cannot be undone.",
         "requestBody": {
           "content": {
             "application/json": {
               "schema": { "$ref": "#/components/schemas/DeleteProjectSpec" },
-              "example": { "org_id": "acme-corp", "project_id": "customer-support-agent" }
+              "example": { "org_id": "acme-corp", "project_id": "agent-smith-v1" }
             }
           },
           "required": true
@@ -82,19 +82,19 @@
         }
       }
     },
-    "/api/v2/memories": {
+    "/memories": {
       "post": {
         "tags": ["Memories"],
         "summary": "Add Memories",
-        "description": "Ingest a batch of messages into the episodic memory stream. These messages will be vectorized and stored for future retrieval.",
         "operationId": "add_memories",
+        "description": "Ingest a batch of messages into the episodic memory stream. These messages will be vectorized and stored for future retrieval.",
         "requestBody": {
           "content": {
             "application/json": {
               "schema": { "$ref": "#/components/schemas/AddMemoriesSpec" },
               "example": {
                 "org_id": "acme-corp",
-                "project_id": "customer-support-agent",
+                "project_id": "agent-smith-v1",
                 "messages": [
                   {
                     "role": "user",
@@ -113,19 +113,19 @@
         }
       }
     },
-    "/api/v2/memories/search": {
+    "/memories/search": {
       "post": {
         "tags": ["Memories"],
         "summary": "Search Memories",
-        "description": "Perform a semantic search across both episodic and semantic memories to retrieve relevant context.",
         "operationId": "search_memories",
+        "description": "Perform a semantic search across both episodic and semantic memories to retrieve relevant context.",
         "requestBody": {
           "content": {
             "application/json": {
               "schema": { "$ref": "#/components/schemas/SearchMemoriesSpec" },
               "example": {
                 "org_id": "acme-corp",
-                "project_id": "customer-support-agent",
+                "project_id": "agent-smith-v1",
                 "query": "How do I reset a password?",
                 "top_k": 5,
                 "types": ["episodic", "semantic"]
@@ -139,23 +139,29 @@
         }
       }
     },
-    "/api/v2/memories/episodic/delete": {
+    "/memories/list": {
+      "post": {
+        "tags": ["Memories"],
+        "summary": "List Memories",
+        "operationId": "list_memories",
+        "description": "Retrieve a paginated list of memories based on filters.",
+        "requestBody": {
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ListMemoriesSpec" } } },
+          "required": true
+        },
+        "responses": {
+          "200": { "description": "Success", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ListResult" } } } }
+        }
+      }
+    },
+    "/memories/episodic/delete": {
       "post": {
         "tags": ["Memories"],
         "summary": "Delete Episodic Memory",
-        "description": "Delete specific episodic memory entries by their unique IDs.",
         "operationId": "delete_episodic_memory",
+        "description": "Delete specific episodic memory entries by their unique IDs.",
         "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": { "$ref": "#/components/schemas/DeleteEpisodicMemorySpec" },
-              "example": {
-                "org_id": "acme-corp",
-                "project_id": "customer-support-agent",
-                "episode_ids": ["evt_123456789", "evt_987654321"]
-              }
-            }
-          },
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/DeleteEpisodicMemorySpec" } } },
           "required": true
         },
         "responses": {
@@ -163,23 +169,14 @@
         }
       }
     },
-    "/api/v2/memories/semantic/delete": {
+    "/memories/semantic/delete": {
       "post": {
         "tags": ["Memories"],
         "summary": "Delete Semantic Memory",
-        "description": "Delete specific semantic features (facts/concepts) by their unique IDs.",
         "operationId": "delete_semantic_memory",
+        "description": "Delete specific semantic features (facts/concepts) by their unique IDs.",
         "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": { "$ref": "#/components/schemas/DeleteSemanticMemorySpec" },
-              "example": {
-                "org_id": "acme-corp",
-                "project_id": "customer-support-agent",
-                "feature_ids": ["sem_abc123", "sem_xyz789"]
-              }
-            }
-          },
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/DeleteSemanticMemorySpec" } } },
           "required": true
         },
         "responses": {
@@ -187,48 +184,29 @@
         }
       }
     },
-    "/api/v2/semantic/sets/types": {
+    "/semantic/sets/types": {
       "post": {
         "tags": ["Semantic Memory"],
         "summary": "Create Set Type",
-        "description": "Define a new type of Semantic Set (e.g., 'Intent', 'User Preference'). This acts as a high-level container for categories.",
         "operationId": "create_semantic_set_type",
+        "description": "Define a new type of Semantic Set (e.g., 'Intent', 'User Preference').",
         "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": { "$ref": "#/components/schemas/CreateSemanticSetTypeSpec" },
-              "example": {
-                "org_id": "acme-corp",
-                "project_id": "customer-support-agent",
-                "name": "User Intent",
-                "description": "Classifies the user's goal in the conversation"
-              }
-            }
-          },
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CreateSemanticSetTypeSpec" } } },
           "required": true
         },
         "responses": {
-          "201": { "description": "Set Type created", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CreateSemanticSetTypeResponse" } } } }
+          "201": { "description": "Set Type created", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/GenericIdResponse" } } } }
         }
       }
     },
-    "/api/v2/semantic/sets/types/delete": {
+    "/semantic/sets/types/delete": {
       "post": {
         "tags": ["Semantic Memory"],
         "summary": "Delete Set Type",
-        "description": "Delete a Semantic Set Type and all its associated configuration.",
         "operationId": "delete_semantic_set_type",
+        "description": "Delete a Semantic Set Type and all its associated configuration.",
         "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": { "$ref": "#/components/schemas/DeleteSemanticSetTypeSpec" },
-              "example": {
-                "org_id": "acme-corp",
-                "project_id": "customer-support-agent",
-                "set_type_id": "set_type_123"
-              }
-            }
-          },
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/DeleteSemanticSetTypeSpec" } } },
           "required": true
         },
         "responses": {
@@ -236,24 +214,14 @@
         }
       }
     },
-    "/api/v2/semantic/sets/configure": {
+    "/semantic/sets/configure": {
       "post": {
         "tags": ["Semantic Memory"],
         "summary": "Configure Set",
-        "description": "Enable or disable a specific Semantic Set Type for a project.",
         "operationId": "configure_semantic_set",
+        "description": "Enable or disable a specific Semantic Set Type for a project.",
         "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": { "$ref": "#/components/schemas/ConfigureSemanticSetSpec" },
-              "example": {
-                "org_id": "acme-corp",
-                "project_id": "customer-support-agent",
-                "set_type_id": "set_type_123",
-                "enabled": true
-              }
-            }
-          },
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ConfigureSemanticSetSpec" } } },
           "required": true
         },
         "responses": {
@@ -261,99 +229,74 @@
         }
       }
     },
-    "/api/v2/semantic/categories": {
+    "/semantic/categories": {
       "post": {
         "tags": ["Semantic Memory"],
         "summary": "Add Category",
-        "description": "Add a specific category to a Semantic Set (e.g., adding 'Refund Request' to the 'User Intent' set).",
         "operationId": "add_semantic_category",
+        "description": "Add a specific category to a Semantic Set.",
         "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": { "$ref": "#/components/schemas/AddSemanticCategorySpec" },
-              "example": {
-                "org_id": "acme-corp",
-                "project_id": "customer-support-agent",
-                "set_id": "set_123",
-                "name": "Refund Request",
-                "description": "User wants money back",
-                "template_id": "tpl_standard_intent"
-              }
-            }
-          },
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/AddSemanticCategorySpec" } } },
           "required": true
         },
         "responses": {
-          "201": { "description": "Category created", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/AddSemanticCategoryResponse" } } } }
+          "201": { "description": "Category created", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/GenericIdResponse" } } } }
         }
       }
     },
-    "/api/v2/semantic/categories/delete": {
+    "/semantic/categories/delete": {
       "post": {
         "tags": ["Semantic Memory"],
         "summary": "Delete Category",
-        "description": "Remove a semantic category.",
         "operationId": "delete_semantic_category",
+        "description": "Remove a semantic category.",
         "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": { "$ref": "#/components/schemas/DeleteSemanticCategorySpec" },
-              "example": {
-                "org_id": "acme-corp",
-                "project_id": "customer-support-agent",
-                "category_id": "cat_456"
-              }
-            }
-          },
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/DeleteSemanticCategorySpec" } } },
           "required": true
         },
         "responses": {
-          "204": { "description": "Category deleted", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/DeleteSemanticCategoryResponse" } } } }
+          "204": { "description": "Category deleted" }
         }
       }
     },
-    "/api/v2/semantic/tags": {
+    "/semantic/categories/templates/list": {
+      "post": {
+        "tags": ["Semantic Memory"],
+        "summary": "List Templates",
+        "operationId": "list_semantic_category_templates",
+        "description": "Retrieve available templates for semantic categories.",
+        "requestBody": {
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ListSemanticCategoryTemplatesSpec" } } },
+          "required": true
+        },
+        "responses": {
+          "200": { "description": "Success", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ListSemanticCategoryTemplatesResponse" } } } }
+        }
+      }
+    },
+    "/semantic/tags": {
       "post": {
         "tags": ["Semantic Memory"],
         "summary": "Add Tag",
-        "description": "Add a tag value to a semantic category.",
         "operationId": "add_semantic_tag",
+        "description": "Add a tag value to a semantic category.",
         "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": { "$ref": "#/components/schemas/AddSemanticTagSpec" },
-              "example": {
-                 "org_id": "acme-corp",
-                 "project_id": "customer-support-agent",
-                 "category_id": "cat_456",
-                 "value": "urgent"
-              }
-            }
-          },
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/AddSemanticTagSpec" } } },
           "required": true
         },
         "responses": {
-           "201": { "description": "Tag created", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/AddSemanticTagResponse" } } } }
+           "201": { "description": "Tag created", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/GenericIdResponse" } } } }
         }
       }
     },
-    "/api/v2/semantic/tags/delete": {
+    "/semantic/tags/delete": {
       "post": {
         "tags": ["Semantic Memory"],
         "summary": "Delete Tag",
-        "description": "Remove a tag from a semantic category.",
         "operationId": "delete_semantic_tag",
+        "description": "Remove a tag from a semantic category.",
         "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": { "$ref": "#/components/schemas/DeleteSemanticTagSpec" },
-              "example": {
-                "org_id": "acme-corp",
-                "project_id": "customer-support-agent",
-                "tag_id": "tag_789"
-              }
-            }
-          },
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/DeleteSemanticTagSpec" } } },
           "required": true
         },
         "responses": {
@@ -361,71 +304,87 @@
         }
       }
     },
-    "/api/v2/features": {
+    "/features": {
       "post": {
         "tags": ["Semantic Memory"],
         "summary": "Add Feature",
-        "description": "Manually inject a semantic feature (fact/concept) into the system.",
         "operationId": "add_feature",
+        "description": "Manually inject a semantic feature (fact/concept) into the system.",
         "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": { "$ref": "#/components/schemas/AddFeatureSpec" },
-              "example": {
-                "org_id": "acme-corp",
-                "project_id": "customer-support-agent",
-                "category_id": "cat_456",
-                "value": "User is frustrated",
-                "metadata": { "source": "manual_entry", "confidence": 1.0 }
-              }
-            }
-          },
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/AddFeatureSpec" } } },
           "required": true
         },
         "responses": {
-          "201": { "description": "Feature created", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/AddFeatureResponse" } } } }
+          "201": { "description": "Feature created", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/GenericIdResponse" } } } }
         }
       }
     },
-    "/api/v2/config/memory": {
+    "/config/memory/episodic": {
       "put": {
         "tags": ["Configuration"],
-        "summary": "Update Memory Config",
-        "description": "Update global configuration for episodic or semantic memory.",
-        "operationId": "update_memory_config",
+        "summary": "Update Episodic Config",
+        "operationId": "update_episodic_config",
+        "description": "Configure settings specific to the Episodic Memory pipeline (e.g., enabling/disabling).",
         "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": { "$ref": "#/components/schemas/UpdateMemoryConfigSpec" },
-              "example": {
-                "episodic_memory": {
-                  "enabled": true,
-                  "long_term_memory_enabled": true,
-                  "long_term_memory": {
-                    "embedder": "openai-small",
-                    "vector_graph_store": "neo4j-prod"
-                  }
-                },
-                "semantic_memory": {
-                  "enabled": true,
-                  "ingestion_trigger_messages": 10
-                }
-              }
-            }
-          },
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/UpdateEpisodicMemorySpec" } } },
           "required": true
         },
         "responses": {
-          "200": { "description": "Configuration updated", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/UpdateMemoryConfigResponse" } } } }
+          "200": { "description": "Configuration Updated", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/UpdateMemoryConfigResponse" } } } }
         }
       }
     },
-    "/api/v2/config/resources/embedders": {
+    "/config/memory/semantic": {
+      "put": {
+        "tags": ["Configuration"],
+        "summary": "Update Semantic Config",
+        "operationId": "update_semantic_config",
+        "description": "Configure settings specific to the Semantic Memory pipeline (e.g., ingestion triggers).",
+        "requestBody": {
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/UpdateSemanticMemorySpec" } } },
+          "required": true
+        },
+        "responses": {
+          "200": { "description": "Configuration Updated", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/UpdateMemoryConfigResponse" } } } }
+        }
+      }
+    },
+    "/config/memory/long-term": {
+      "put": {
+        "tags": ["Configuration"],
+        "summary": "Update Long-Term Config",
+        "operationId": "update_long_term_config",
+        "description": "Configure the underlying vector store and embedding parameters for Long-Term Memory.",
+        "requestBody": {
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/UpdateLongTermMemorySpec" } } },
+          "required": true
+        },
+        "responses": {
+          "200": { "description": "Configuration Updated", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/UpdateMemoryConfigResponse" } } } }
+        }
+      }
+    },
+    "/config/memory/short-term": {
+      "put": {
+        "tags": ["Configuration"],
+        "summary": "Update Short-Term Config",
+        "operationId": "update_short_term_config",
+        "description": "Configure the working memory buffer capacity and parameters.",
+        "requestBody": {
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/UpdateShortTermMemorySpec" } } },
+          "required": true
+        },
+        "responses": {
+          "200": { "description": "Configuration Updated", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/UpdateMemoryConfigResponse" } } } }
+        }
+      }
+    },
+    "/config/resources/embedders": {
       "post": {
         "tags": ["Configuration"],
         "summary": "Add Embedder",
-        "description": "Register a new embedding model provider.",
         "operationId": "add_embedder",
+        "description": "Register a new embedding model provider.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -433,10 +392,7 @@
               "example": {
                 "name": "openai-3-large",
                 "provider": "openai",
-                "config": {
-                  "model": "text-embedding-3-large",
-                  "api_key": "sk-..."
-                }
+                "config": { "model": "text-embedding-3-large", "api_key": "sk-..." }
               }
             }
           },
@@ -447,7 +403,19 @@
         }
       }
     },
-    "/api/v2/metrics": {
+    "/config/resources/rerankers/{name}/retry": {
+      "post": {
+        "tags": ["Configuration"],
+        "summary": "Retry Reranker",
+        "operationId": "retry_reranker",
+        "description": "Attempt to re-initialize a failed reranker resource.",
+        "parameters": [{ "name": "name", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "responses": {
+          "200": { "description": "Retry attempt completed", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/UpdateResourceResponse" } } } }
+        }
+      }
+    },
+    "/metrics": {
       "get": {
         "tags": ["System"],
         "summary": "Metrics",
@@ -458,7 +426,7 @@
         }
       }
     },
-    "/api/v2/health": {
+    "/health": {
       "get": {
         "tags": ["System"],
         "summary": "Health Check",
@@ -470,6 +438,37 @@
   },
   "components": {
     "schemas": {
+      "GenericIdResponse": {
+        "type": "object",
+        "properties": { "id": { "type": "string", "description": "The unique identifier of the created resource." } }
+      },
+      "CreateProjectSpec": {
+        "type": "object",
+        "required": ["org_id", "project_id"],
+        "properties": {
+          "org_id": { "type": "string" },
+          "project_id": { "type": "string" },
+          "description": { "type": "string" },
+          "config": { "$ref": "#/components/schemas/ProjectConfig" }
+        }
+      },
+      "ProjectConfig": {
+        "type": "object",
+        "properties": {
+          "embedder": { "type": "string" },
+          "reranker": { "type": "string" }
+        }
+      },
+      "ProjectResponse": {
+        "type": "object",
+        "required": ["org_id", "project_id"],
+        "properties": {
+          "org_id": { "type": "string" },
+          "project_id": { "type": "string" },
+          "description": { "type": "string" },
+          "config": { "$ref": "#/components/schemas/ProjectConfig" }
+        }
+      },
       "DeleteProjectSpec": {
         "type": "object",
         "required": ["org_id", "project_id"],
@@ -505,11 +504,6 @@
           "name": { "type": "string", "description": "The display name for this semantic set type." },
           "description": { "type": "string", "description": "A description of what this set represents." }
         }
-      },
-      "CreateSemanticSetTypeResponse": {
-        "type": "object",
-        "required": ["id"],
-        "properties": { "id": { "type": "string" } }
       },
       "DeleteSemanticSetTypeSpec": {
         "type": "object",
@@ -550,11 +544,6 @@
           "template_id": { "type": "string" }
         }
       },
-      "AddSemanticCategoryResponse": {
-        "type": "object",
-        "required": ["id"],
-        "properties": { "id": { "type": "string" } }
-      },
       "DeleteSemanticCategorySpec": {
         "type": "object",
         "required": ["org_id", "project_id", "category_id"],
@@ -562,6 +551,19 @@
           "org_id": { "type": "string" },
           "project_id": { "type": "string" },
           "category_id": { "type": "string" }
+        }
+      },
+      "ListSemanticCategoryTemplatesSpec": {
+        "type": "object",
+        "properties": {
+          "org_id": { "type": "string" },
+          "project_id": { "type": "string" }
+        }
+      },
+      "ListSemanticCategoryTemplatesResponse": {
+        "type": "object",
+        "properties": {
+          "items": { "type": "array", "items": { "type": "object" } }
         }
       },
       "AddSemanticTagSpec": {
@@ -573,11 +575,6 @@
           "category_id": { "type": "string" },
           "value": { "type": "string" }
         }
-      },
-      "AddSemanticTagResponse": {
-        "type": "object",
-        "required": ["id"],
-        "properties": { "id": { "type": "string" } }
       },
       "DeleteSemanticTagSpec": {
         "type": "object",
@@ -599,16 +596,72 @@
           "metadata": { "type": "object" }
         }
       },
-      "AddFeatureResponse": {
+      "AddMemoriesSpec": {
         "type": "object",
-        "required": ["id"],
-        "properties": { "id": { "type": "string" } }
+        "required": ["messages"],
+        "properties": {
+          "org_id": { "type": "string", "default": "universal" },
+          "project_id": { "type": "string", "default": "universal" },
+          "messages": { "type": "array", "items": { "$ref": "#/components/schemas/MemoryMessage" } }
+        }
       },
-      "UpdateMemoryConfigSpec": {
+      "MemoryMessage": {
+        "type": "object",
+        "required": ["content"],
+        "properties": {
+          "content": { "type": "string" },
+          "role": { "type": "string", "default": "user" },
+          "timestamp": { "type": "string" },
+          "metadata": { "type": "object" }
+        }
+      },
+      "AddMemoriesResponse": {
+        "type": "object",
+        "properties": { "results": { "type": "array", "items": { "type": "object" } } }
+      },
+      "SearchMemoriesSpec": {
+        "type": "object",
+        "required": ["query"],
+        "properties": {
+          "org_id": { "type": "string", "default": "universal" },
+          "project_id": { "type": "string", "default": "universal" },
+          "query": { "type": "string" },
+          "top_k": { "type": "integer", "default": 10 },
+          "types": { "type": "array", "items": { "type": "string" } }
+        }
+      },
+      "SearchResult": {
+        "type": "object",
+        "required": ["status", "content"],
+        "properties": {
+          "status": { "type": "integer" },
+          "content": { "type": "object", "additionalProperties": true }
+        }
+      },
+      "ListMemoriesSpec": {
         "type": "object",
         "properties": {
-          "episodic_memory": { "$ref": "#/components/schemas/UpdateEpisodicMemorySpec" },
-          "semantic_memory": { "$ref": "#/components/schemas/UpdateSemanticMemorySpec" }
+          "org_id": { "type": "string" },
+          "project_id": { "type": "string" },
+          "page_size": { "type": "integer", "default": 20 },
+          "page_num": { "type": "integer", "default": 0 },
+          "filter": { "type": "string" }
+        }
+      },
+      "ListResult": {
+        "type": "object",
+        "required": ["items", "total"],
+        "properties": {
+          "items": { "type": "array", "items": { "type": "object" } },
+          "total": { "type": "integer" }
+        }
+      },
+      "UpdateEpisodicMemorySpec": {
+        "type": "object",
+        "properties": {
+          "enabled": { "type": "boolean" },
+          "long_term_memory_enabled": { "type": "boolean" },
+          "short_term_memory_enabled": { "type": "boolean" }
         }
       },
       "UpdateSemanticMemorySpec": {
@@ -617,32 +670,22 @@
           "enabled": { "type": "boolean" },
           "database": { "type": "string" },
           "llm_model": { "type": "string" },
-          "embedding_model": { "type": "string" },
-          "ingestion_trigger_messages": { "type": "integer" },
-          "ingestion_trigger_age_seconds": { "type": "integer" }
+          "ingestion_trigger_messages": { "type": "integer" }
         }
       },
-      "UpdateEpisodicMemorySpec": {
+      "UpdateLongTermMemorySpec": {
         "type": "object",
         "properties": {
-          "enabled": { "type": "boolean" },
-          "long_term_memory_enabled": { "type": "boolean" },
-          "short_term_memory_enabled": { "type": "boolean" },
-          "long_term_memory": {
-            "type": "object",
-            "properties": {
-              "embedder": { "type": "string" },
-              "reranker": { "type": "string" },
-              "vector_graph_store": { "type": "string" }
-            }
-          },
-          "short_term_memory": {
-            "type": "object",
-            "properties": {
-              "llm_model": { "type": "string" },
-              "message_capacity": { "type": "integer" }
-            }
-          }
+          "vector_store": { "type": "string" },
+          "embedder": { "type": "string" },
+          "reranker": { "type": "string" }
+        }
+      },
+      "UpdateShortTermMemorySpec": {
+        "type": "object",
+        "properties": {
+          "capacity": { "type": "integer" },
+          "buffer_size": { "type": "integer" }
         }
       },
       "UpdateMemoryConfigResponse": {
@@ -659,7 +702,15 @@
         "properties": {
           "name": { "type": "string" },
           "provider": { "type": "string", "enum": ["openai", "amazon-bedrock", "sentence-transformer"] },
-          "config": { "type": "object", "additionalProperties": true }
+          "config": {
+            "type": "object",
+            "properties": {
+              "model": { "type": "string" },
+              "api_key": { "type": "string", "format": "password" },
+              "aws_region": { "type": "string" }
+            },
+            "additionalProperties": true
+          }
         }
       },
       "UpdateResourceResponse": {
@@ -669,75 +720,6 @@
           "success": { "type": "boolean" },
           "status": { "type": "string", "enum": ["READY", "FAILED", "INITIALIZING"] },
           "error": { "type": "string", "nullable": true }
-        }
-      },
-      "CreateProjectSpec": {
-        "type": "object",
-        "required": ["org_id", "project_id"],
-        "properties": {
-          "org_id": { "type": "string" },
-          "project_id": { "type": "string" },
-          "description": { "type": "string" },
-          "config": { "$ref": "#/components/schemas/ProjectConfig" }
-        }
-      },
-      "ProjectConfig": {
-        "type": "object",
-        "properties": {
-          "embedder": { "type": "string" },
-          "reranker": { "type": "string" }
-        }
-      },
-      "ProjectResponse": {
-        "type": "object",
-        "required": ["org_id", "project_id"],
-        "properties": {
-          "org_id": { "type": "string" },
-          "project_id": { "type": "string" },
-          "description": { "type": "string" },
-          "config": { "$ref": "#/components/schemas/ProjectConfig" }
-        }
-      },
-      "AddMemoriesSpec": {
-        "type": "object",
-        "required": ["messages"],
-        "properties": {
-          "org_id": { "type": "string", "default": "universal" },
-          "project_id": { "type": "string", "default": "universal" },
-          "messages": { "type": "array", "items": { "$ref": "#/components/schemas/MemoryMessage" } }
-        }
-      },
-      "MemoryMessage": {
-        "type": "object",
-        "required": ["content"],
-        "properties": {
-          "content": { "type": "string" },
-          "role": { "type": "string" },
-          "timestamp": { "type": "string" },
-          "metadata": { "type": "object" }
-        }
-      },
-      "AddMemoriesResponse": {
-        "type": "object",
-        "properties": { "results": { "type": "array", "items": { "type": "object" } } }
-      },
-      "SearchMemoriesSpec": {
-        "type": "object",
-        "required": ["query"],
-        "properties": {
-          "org_id": { "type": "string" },
-          "project_id": { "type": "string" },
-          "query": { "type": "string" },
-          "top_k": { "type": "integer" },
-          "types": { "type": "array", "items": { "type": "string" } }
-        }
-      },
-      "SearchResult": {
-        "type": "object",
-        "required": ["status", "content"],
-        "properties": {
-          "status": { "type": "integer" },
-          "content": { "type": "object", "additionalProperties": true }
         }
       },
       "RestErrorModel": {
