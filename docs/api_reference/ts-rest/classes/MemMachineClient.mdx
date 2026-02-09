@@ -95,7 +95,7 @@ await client.healthCheck()
 ## Usage Example
 
 ```typescript
-import { MemMachineClient } from '@memmachine/client'; [cite: 58]
+import { MemMachineClient } from '@memmachine/client';
 
 const client = new MemMachineClient({ 
   base_url: 'https://your-base-url'
@@ -105,11 +105,11 @@ const client = new MemMachineClient({
 const project = client.project({ 
   org_id: 'demo_org', 
   project_id: 'main_project' 
-}); [cite: 59]
+});
 
 // Check server status
 const status = await client.healthCheck();
-console.log(`Server status: ${status.status}`); [cite: 59]
+console.log(`Server status: ${status.status}`);
 
 // Retrieve Prometheus metrics
 const metrics = await client.getMetrics();

@@ -55,12 +55,11 @@ const results = await memory.search("What were the client's requirements for the
   types: ['episodic', 'semantic']
 });
 
-if (results.status === 200) {
-  // Accessing episodic context
-  const { short_term_memory } = results.content.episodic_memory;
-  console.log(`Context clues: ${short_term_memory.length}`);
-  
-  // Accessing semantic knowledge
-  const knowledge = results.content.semantic_memory;
-  console.log(`Knowledge points: ${knowledge.length}`);
+if (result.status === 0) {
+  const { short_term_memory } = result.content.episodic_memory
+  console.log(`Context clues: ${short_term_memory.episodes.length}`)
+
+  const knowledge = result.content.semantic_memory
+  console.log(`Knowledge points: ${knowledge.length}`)
 }
+```
