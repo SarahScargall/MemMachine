@@ -121,7 +121,7 @@
                 "api_reference/ts-rest/interfaces/ProjectContext",
                 "api_reference/ts-rest/interfaces/AddMemoryOptions",
                 "api_reference/ts-rest/interfaces/SearchMemoryResult",
-                "api_reference/ts-rest/interfaces/EpisodicMemory",
+                "api_reference/ts-rest/interfaces/MemoryStructures",
                 "api_reference/ts-rest/interfaces/Project",
                 "api_reference/ts-rest/interfaces/Types"
               ]
