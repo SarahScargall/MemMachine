@@ -41,7 +41,7 @@ The standard V8 stack trace is useful for debugging the location of the failure 
 To provide a robust user experience, we recommend wrapping your SDK calls in a `try/catch` block and checking for this specific error type.
 
 ```typescript
-import { MemMachineClient, MemMachineAPIError } from '@memmachine/client';
+import { MemMachineClient, MemMachineAPIError } from '@memmachine/sdk';
 
 try {
   const projects = await client.getProjects();
