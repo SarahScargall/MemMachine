@@ -1,58 +1,46 @@
 ---
 title: "The Workspace"
-description: "Project metadata and scoped memory context configurations."
+description: "Project data models and metadata configuration for MemMachine workspaces."
 ---
 
 ## Interface `Project`
 
-The `Project` object represents the high-level container for all your data. It defines the identity and the AI models (embedder/reranker) used for this specific workspace.
+The `Project` object represents the high-level container for your data. It defines the identity and the specific AI models (embedder/reranker) used for semantic vectorization and retrieval within a workspace.
 
 | Property | Type | Description |
 | :--- | :--- | :--- |
-| `project_id` | `string` | **Required.** The unique identifier for the project. |
-| `org_id` | `string` | **Required.** The organization ID this project belongs to. |
+| `id` | `string` | **Required.** The unique identifier for the project. |
+| `orgId` | `string` | **Required.** The organization ID this project belongs to. |
 | `description` | `string` | *Optional.* A brief summary of the project's purpose. |
-| `config` | `object` | *Optional.* Technical settings including the `embedder` and `reranker` model names. |
+| `config` | `ProjectConfig` | *Optional.* Technical settings for the project's AI engine. |
 
----
-
-## Interface `MemoryContext`
-
-While a Project is the broad container, the `MemoryContext` allows you to narrow your focus to specific users, sessions, or agents. This ensures that the AI only retrieves memories relevant to the current interaction.
+### `ProjectConfig`
 
 | Property | Type | Description |
 | :--- | :--- | :--- |
-| `session_id` | `string` | *Optional.* Filters memory to a specific conversation or session. |
-| `user_id` | `string \| string[]` | *Optional.* Filters memory to one or more specific user identifiers. |
-| `agent_id` | `string \| string[]` | *Optional.* Filters memory to one or more specific AI agent identifiers. |
-| `group_id` | `string` | *Optional.* Filters memory to a specific team or group ID. |
+| `embedder` | `string` | The model used for generating semantic embeddings. |
+| `reranker` | `string` | The model used for optimizing search results. |
 
 ---
 
 ## Usage Example
 
-The context is usually passed when initializing the memory engine to ensure all subsequent searches are "scoped" correctly.
-
-
+In the current SDK, project data is typically retrieved through the primary client. The following example demonstrates how to list and inspect projects using the updated naming conventions.
 
 ```typescript
-import { MemMachineClient } from '@memmachine/sdk';
+import { MemMachineClient, Project } from '@memmachine/sdk';
 
-const client = new MemMachineClient({ base_url: 'your-base-url' });
-
-// 1. Access the Project workspace
-const projectInstance = client.project({ 
-  org_id: 'acme_corp', 
-  project_id: 'customer_support' 
+const client = new MemMachineClient({ 
+  apiKey: process.env.MEMMACHINE_API_KEY 
 });
 
-// 2. Narrow the scope to a specific user and session
-const memory = projectInstance.memory({
-  user_id: 'user_99',
-  session_id: 'chat_session_alpha',
-  agent_id: 'support_bot_v2'
-});
+// Retrieve all projects associated with your API key
+const projects: Project[] = await client.getProjects();
 
-// Any search now only looks at 'user_99' memories within this session
-const results = await memory.search("What did we discuss last time?");
+projects.forEach((project) => {
+  console.log(`Project ID: ${project.id}`);
+  console.log(`Embedder: ${project.config?.embedder ?? 'Default'}`);
+});
 ```
+
+<Note title="Property Refactor"> The properties project_id and org_id have been updated to id and orgId to align with the standard TypeScript camelCase convention used throughout the current SDK. </Note>

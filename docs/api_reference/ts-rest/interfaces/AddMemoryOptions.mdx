@@ -1,52 +1,38 @@
 ---
-title: "Storing Memory"
-description: "Input configurations and result schemas for adding new episodic data."
+title: "Add Memory Options"
+description: "Configuration for ingesting new episodic memories into the memory engine."
 ---
 
 ## Interface `AddMemoryOptions`
 
-These options allow you to categorize and add rich context to a memory entry. This metadata is crucial for later filtering and semantic retrieval.
+The `AddMemoryOptions` interface defines the payload for the `client.addEpisodicMemory()` method. It requires both the content of the memory and the metadata context for proper isolation.
 
 | Property | Type | Description |
 | :--- | :--- | :--- |
-| `producer` | `string` | *Optional.* The Entity ID of who created the memory. |
-| `produced_for` | `string` | *Optional.* The Target Entity ID the memory is intended for. |
-| `role` | [`MemoryProducerRole`](./Types) | *Optional.* The role of the creator (`user`, `assistant`, or `system`). |
-| `episode_type` | `string` | *Optional.* A custom category for the entry (e.g., `'conversation'`, `'note'`). |
-| `metadata` | `Record<string, unknown>` | *Optional.* A key-value map for any additional custom data. |
-| `types` | [`MemoryType[]`](./Types) | *Optional.* Specify if this should be stored as `episodic`, `semantic`, or both. |
+| `content` | `string` | **Required.** The raw text content of the interaction or fact to be stored. |
+| `metadata` | [`ProjectContext`](./ProjectContext) | **Required.** Scoping identifiers including `orgId` and `projectId`. |
+| `role` | `MemoryProducerRole` | *Optional.* The role of the entity that produced the memory (e.g., `user`, `assistant`, or `system`). |
 
----
-
-## Interface `AddMemoryResult`
-
-This is the confirmation object returned by the server after successfully adding a memory.
-
-| Property | Type | Description |
-| :--- | :--- | :--- |
-| `results` | `object[]` | An array of objects, each containing a `uid` (string) for the newly created entry. |
-
----
 
 ## Usage Example
 
+The following example demonstrates how to structure the options when adding a memory directly through the `MemMachineClient`.
+
 ```typescript
-import { MemMachineClient } from '@memmachine/sdk';
+import { MemMachineClient, AddMemoryOptions } from '@memmachine/sdk';
 
-const memory = client.project({ org_id: 'org_1', project_id: 'proj_1' }).memory();
+const client = new MemMachineClient({ apiKey: process.env.MEMMACHINE_API_KEY });
 
-// Adding a memory with full context
-const response = await memory.add("The user prefers dark mode for the UI.", {
-  producer: "user_123",
-  role: "user",
-  episode_type: "preference",
+const memoryPayload: AddMemoryOptions = {
+  content: "The user expressed a strong preference for TypeScript over vanilla JavaScript.",
   metadata: {
-    platform: "mobile",
-    timestamp: Date.now()
-  }
-});
+    orgId: "dev_studio_01",
+    projectId: "coding_assistant_v2",
+    userId: "dev_user_77"
+  },
+  role: "user"
+};
 
-// Accessing the new memory ID
-const newId = response.results[0].uid;
-console.log(`Memory stored with ID: ${newId}`);
+await client.addEpisodicMemory(memoryPayload);
 ```
+<Note> Ensure the metadata object contains a valid projectId. Memories added without a project context will fail validation to prevent data leakage between workspaces. </Note>

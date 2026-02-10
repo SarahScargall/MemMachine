@@ -1,50 +1,53 @@
 ---
 title: "Project Context"
-description: "Defining project identifiers and configuration for new projects."
+description: "Defining organizational and project identifiers for metadata-driven scoping."
 ---
 
 ## Interface `ProjectContext`
 
-The `ProjectContext` is used to target a specific workspace within MemMachine. It is required when initializing a project via the client.
+The `ProjectContext` interface is the core mechanism for data isolation in MemMachine. In the latest SDK, this object is passed as `metadata` to nearly every method in the `MemMachineClient` to ensure operations are scoped to the correct workspace.
 
 | Property | Type | Description |
 | :--- | :--- | :--- |
-| `org_id` | `string` | **Required.** The unique identifier for your organization. |
-| `project_id` | `string` | **Required.** The unique identifier for the specific project. |
+| `orgId` | `string` | **Required.** The unique identifier for your organization. |
+| `projectId` | `string` | **Required.** The unique identifier for the specific project. |
+| `userId` | `string` | *Optional.* Identifies the specific end-user associated with the memory. |
+| `agentId` | `string` | *Optional.* Identifies the AI agent or bot instance. |
 
 ---
 
 ## Interface `CreateProjectOptions`
 
-These options are used when calling `project.create()` to initialize a new project on the server.
+These options are used specifically when initializing a new project on the server via `client.createProject()`[cite: 56].
 
 | Property | Type | Description |
 | :--- | :--- | :--- |
-| `description` | `string` | *Optional.* A brief summary or name for the project. |
-| `embedder` | `string` | *Optional.* Specify the embedding model for semantic vectorization. |
-| `reranker` | `string` | *Optional.* Specify the reranker model for optimizing search results. |
+| `description` | `string` | *Optional.* A brief summary or name for the project[cite: 58]. |
+| `embedder` | `string` | *Optional.* Specify the embedding model (e.g., `openai:text-embedding-3-small`)[cite: 59]. |
+| `reranker` | `string` | *Optional.* Specify the reranker model for optimizing search results[cite: 60]. |
 
 ---
 
 ## Usage Example
 
+The example below demonstrates how to use `ProjectContext` to scope a memory search directly through the client[cite: 61, 62].
+
 ```typescript
-import { MemMachineClient } from '@memmachine/sdk';
+import { MemMachineClient, ProjectContext } from '@memmachine/sdk';
 
-const client = new MemMachineClient({ base_url: 'your-base-url' });
+const client = new MemMachineClient({ apiKey: process.env.MEMMACHINE_API_KEY });
 
-// 1. Define the Context
-const context = {
-  org_id: 'acme_corp',
-  project_id: 'customer_support_bot'
+// 1. Define the Metadata Context
+const context: ProjectContext = {
+  orgId: 'acme_corp',
+  projectId: 'customer_support_bot',
+  userId: 'user_882'
 };
 
-const project = client.project(context);
-
-// 2. Create the project with specific AI models
-await project.create({
-  description: 'Main support bot memory',
-  embedder: 'openai:text-embedding-3-small',
-  reranker: 'cohere:rerank-english-v3.0'
+// 2. Pass context directly to memory methods
+const memories = await client.searchProfileMemory({
+  query: "What is the user's favorite color?",
+  metadata: context
 });
 ```
+<Tip> Pro-Tip: Always include a userId in your ProjectContext when dealing with user-specific data to enable personalized memory retrieval. </Tip>

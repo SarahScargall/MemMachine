@@ -1,6 +1,10 @@
+Here is the updated version of EpisodicMemory.mdx with the consolidated structures, updated camelCase naming, and no citations.
+
+Code snippet
+
 ---
 title: "Memory Structures"
-description: "Detailed schemas for Episodic and Semantic memory entries."
+description: "Detailed schemas for Episodic and Profile memory entries."
 ---
 
 ## Interface `EpisodicMemory`
@@ -9,46 +13,58 @@ Episodic memories represent specific events or interactions in a chronological s
 
 | Property | Type | Description |
 | :--- | :--- | :--- |
-| `uid` | `string` | The unique identifier for this specific memory entry. |
-| `content` | `string` | The actual text or data of the memory. |
-| `created_at` | `string` | ISO timestamp of when the memory was stored. |
-| `session_key` | `string` | Identifier for the specific session or conversation. |
-| `producer_id` | `string` | The ID of the entity (user/system) that created the memory. |
-| `producer_role` | `string` | The role of the creator (e.g., `'user'`, `'assistant'`). |
-| `episode_type` | `string` | The category of the episode (e.g., `'chat_message'`). |
-| `sequence_num` | `number` | The order of this memory within its session. |
-| `metadata` | `Record<string, unknown>` | Additional custom data stored with the memory. |
+| `id` | `string` | The unique identifier for this specific memory entry. |
+| `content` | `string` | The raw text or data of the memory. |
+| `role` | `MemoryProducerRole` | The role of the creator (e.g., `user`, `assistant`). |
+| `orgId` | `string` | The organization ID associated with this memory. |
+| `projectId` | `string` | The project ID associated with this memory. |
+| `userId` | `string` | *Optional.* The specific user associated with the interaction. |
+| `createdAt` | `string` | ISO 8601 timestamp of when the memory was stored. |
+| `metadata` | `Record<string, any>` | Additional custom context stored with the memory. |
 
 ---
 
 ## Interface `SemanticMemory`
 
-Semantic memories represent distilled knowledge, facts, or "truths" extracted from episodes. These are used for high-level reasoning and background context.
+Semantic memories (also known as Profile memories) represent distilled knowledge and facts extracted from interactions. These are used for high-level reasoning and background context.
 
 | Property | Type | Description |
 | :--- | :--- | :--- |
-| `set_id` | `string` | Identifier for the collection this memory belongs to. |
-| `category` | `string` | The high-level classification (e.g., `'user_preference'`). |
-| `tag` | `string` | A specific tag for quick lookups. |
-| `feature_name` | `string` | The specific trait or feature being described. |
-| `value` | `string` | The factual value of the memory (e.g., `'prefers_dark_mode'`). |
-| `metadata` | `object` | Contains `id`, `citations` (sources), and `other` custom fields. |
+| `id` | `string` | Unique identifier for the semantic fact. |
+| `featureName` | `string` | The specific trait or feature being described (e.g., `favoriteColor`). |
+| `value` | `string` | The factual value of the memory (e.g., `blue`). |
+| `category` | `string` | High-level classification like `user_preference`. |
+| `score` | `number` | The confidence or relevance score of this fact. |
+| `updatedAt` | `string` | ISO 8601 timestamp of the last time this fact was updated. |
 
 ---
 
-## Comparison: Episodes vs. Semantics
+## Usage Example
 
-
-
-Understanding which model you are receiving helps you format your UI or AI prompts correctly:
+The current SDK returns a flattened array of results. Use the properties below to format your UI or AI prompts.
 
 ```typescript
-// Example of handling both types in a search result
-results.content.episodic_memory.long_term_memory.forEach((ep: EpisodicMemory) => {
-  console.log(`[${ep.created_at}] Event: ${ep.content}`);
+import { MemMachineClient } from '@memmachine/sdk';
+
+const client = new MemMachineClient({ apiKey: process.env.MEMMACHINE_API_KEY });
+
+// Example of handling retrieved memories
+const results = await client.searchProfileMemory({ 
+  query: "What are the user's preferences?",
+  metadata: { 
+    orgId: "org_1", 
+    projectId: "proj_A" 
+  }
 });
 
-results.content.semantic_memory.forEach((sem: SemanticMemory) => {
-  console.log(`Fact: ${sem.feature_name} is ${sem.value}`);
+results.forEach((memory) => {
+  if (memory.featureName) {
+    // Handling Semantic/Profile Memory
+    console.log(`Fact: ${memory.featureName} is ${memory.value}`);
+  } else {
+    // Handling Episodic Memory
+    console.log(`[${memory.createdAt}] Event: ${memory.content}`);
+  }
 });
-```
+
+<Note title="Structure Change"> The latest SDK version has moved from snake_case (e.g., created_at) to camelCase (e.g., createdAt) to align with standard TypeScript conventions. </Note>

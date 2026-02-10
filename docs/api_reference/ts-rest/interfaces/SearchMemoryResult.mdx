@@ -1,19 +1,17 @@
 ---
-title: "Retrieving Memory"
-description: "Search query configurations and the multi-layered memory result model."
+title: "Search Memory Result"
+description: "The structure of semantic search results."
 ---
 
-## Interface `SearchMemoryOptions`
-
-Fine-tune your semantic search by applying filters, thresholds, and specifying which memory types to scan.
+## Interface `SearchMemoryResult`
 
 | Property | Type | Description |
 | :--- | :--- | :--- |
-| **top_k** | `number` | *Optional.* Replaces `limit`. Maximum number of results to return. Defaults to `10`. |
-| **filter** | `string` | *Optional.* Filter expression to narrow search results based on metadata. |
-| **expand_context** | `number` | **New.** Number of extra episodes to include for context. Defaults to `0`. |
-| **score_threshold** | `number` | **New.** Minimum relevance score required to include a memory. |
-| **types** | `MemoryType[]` | *Optional.* Memory types to search. Defaults to `['episodic', 'semantic']`. |
+| `id` | `string` | The unique identifier of the retrieved memory. |
+| `content` | `string` | The text content of the memory hit. |
+| `score` | `number` | The semantic relevance score (0.0 to 1.0). |
+| `metadata` | [`ProjectContext`](./ProjectContext) | The context associated with this specific memory. |
+| `createdAt` | `string` | ISO timestamp of when the memory was captured. |
 
 ---
 

@@ -5,90 +5,95 @@ description: "The primary entry point for the MemMachine TypeScript SDK."
 
 ## Class `MemMachineClient`
 
-Main API client for interacting with the MemMachine RESTful service.
-
-This client provides a unified interface for memory management, project operations, and server health checks. It handles configuration and serves as the gateway to your organizations and projects.
+The `MemMachineClient` is the main API client for interacting with the MemMachine service. Following the latest SDK updates, this client now serves as the direct interface for episodic and profile memory operations using **Metadata Scoping**
 
 ```typescript
 new MemMachineClient(options: ClientOptions)
 ```
+
 **Parameters**
 
-| **Name**  | **Type**                                                     | **Description**                                              |
-| --------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
-| `options` | [`ClientOptions`](../interfaces/ClientOptions) | Configuration for the client, including base URL and optional API key. |
+| **Name**  | **Type**                                                     | **Description**                                 |
+| --------- | ------------------------------------------------------------ | ----------------------------------------------- |
+| `options` | [`ClientOptions`](../interfaces/ClientOptions) | Configuration including `apiKey` and `baseUrl`. |
 
 ------
 
-## Methods
+## Active Memory Methods
 
-### `project()`
+These methods are the primary way to interact with the memory engine. Every call requires a `metadata` object to maintain organizational and project context.
 
-Creates a `MemMachineProject` instance for managing a specific project and its memories.
+### `addEpisodicMemory()`
+
+Adds a new chronological memory to the system.
 
 ```typescript
-client.project(projectContext: ProjectContext)
+await client.addEpisodicMemory({
+  content: string,
+  metadata: ProjectContext
+})
 ```
 
 **Parameters**
 
-| **Name**         | **Type**                                                     | **Description**                              |
-| ---------------- | ------------------------------------------------------------ | -------------------------------------------- |
-| `projectContext` | [`ProjectContext`](../interfaces/ProjectContext) | Object containing `org_id` and `project_id`. |
+- `content`: The raw text of the memory to store.
+- `metadata`: An object containing `orgId`, `projectId`, and optionally `userId`.
 
-**Returns**
+  
 
-- [`MemMachineProject`](./MemMachineProject)
+  
+
+**Throws**
+
+- [`MemMachineAPIError`](./MemMachineAPIError) if the ingestion fails.
+
+  
+
+  
 
 ------
 
+### `searchProfileMemory()`
+
+Performs a semantic search to retrieve synthesized facts and user profile insights.
+
+```typescript
+await client.searchProfileMemory({
+  query: string,
+  metadata: ProjectContext,
+  limit?: number
+})
+```
+
+**Parameters**
+
+- `query`: The natural language question or search term.
+- `metadata`: Contextual identifiers for scoping the search.
+- `limit`: (Optional) Maximum number of results to return.
+
+**Returns**
+
+- `Promise<SearchMemoryResult[]>` — A list of relevant memory hits and their scores.
+
+------
+
+## Utility Methods
+
 ### `getProjects()`
 
-Retrieves a list of all projects accessible to the client on the MemMachine server.
+Retrieves a list of all projects accessible to the current API key.
 
 ```typescript
 await client.getProjects()
 ```
 
-**Returns**
-
-- `Promise<Project[]>` — A list of [Project](../interfaces/Project) entities.
-
-**Throws**
-
-- [`MemMachineAPIError`](./MemMachineAPIError) if the server request fails.
-
-------
-
-### `getMetrics()`
-
-Retrieves Prometheus metrics from the MemMachine server.
-
-```typescript
-await client.getMetrics()
-```
-
-**Returns**
-
-- `Promise<string>` — A promise that resolves to the server metrics in Prometheus format.
-
-**Throws**
-
-- [`MemMachineAPIError`](https://www.google.com/search?q=./MemMachineAPIError) if the request fails.
-
-------
-
 ### `healthCheck()`
 
-Checks the connection and health status of the MemMachine server.
+Checks the connection status and uptime of the MemMachine server.
 
 ```typescript
-await client.healthCheck()
+const status = await client.healthCheck();
 ```
-
-**Returns**
-
-- `Promise<HealthStatus>` — The [HealthStatus](../interfaces/ClientOptions) object containing server uptime and version.
 
 ------
 
@@ -98,20 +103,25 @@ await client.healthCheck()
 import { MemMachineClient } from '@memmachine/sdk';
 
 const client = new MemMachineClient({ 
-  base_url: 'https://your-base-url'
+  apiKey: process.env.MEMMACHINE_API_KEY 
 });
 
-// Access a specific project
-const project = client.project({ 
-  org_id: 'demo_org', 
-  project_id: 'main_project' 
-});
+async function main() {
+  // Direct interaction pattern
+  await client.addEpisodicMemory({
+    content: "User prefers dark mode and high-contrast settings.",
+    metadata: { 
+      orgId: "my_org", 
+      projectId: "ui_prefs_project",
+      userId: "user_123" 
+    }
+  });
 
-// Check server status
-const status = await client.healthCheck();
-console.log(`Server status: ${status.status}`);
-
-// Retrieve Prometheus metrics
-const metrics = await client.getMetrics();
-console.log(metrics);
+  const profile = await client.searchProfileMemory({
+    query: "What are the user's UI preferences?",
+    metadata: { projectId: "ui_prefs_project" }
+  });
+}
 ```
+
+<Note> The `.project()` method still exists for legacy support but is no longer the recommended path. For all new implementations, use the direct memory methods shown above. </Note>

@@ -1,31 +1,27 @@
 ---
-title: "Client Configuration"
-description: "Settings for initializing the MemMachine Client and verifying server health."
+title: "Client Options"
+description: "Configuration settings for the MemMachineClient."
 ---
 
 ## Interface `ClientOptions`
 
-The `ClientOptions` object is passed to the `MemMachineClient` constructor to configure connection, authentication, and request behavior.
-
 | Property | Type | Description |
 | :--- | :--- | :--- |
-| `base_url` | `string` | **Required.** The root URL of your MemMachine server instance. |
-| `api_key` | `string` | *Optional.* Your secret API key used for authenticating requests. |
-| `timeout` | `number` | *Optional.* Request timeout in milliseconds (Default: `60000`). |
-| `max_retries` | `number` | *Optional.* Number of retry attempts for failed requests (Default: `3`). |
+| `apiKey` | `string` | **Required.** Your MemMachine API key for authentication. |
+| `baseUrl` | `string` | *Optional.* The URL of your MemMachine instance. Defaults to production. |
+| `timeout` | `number` | *Optional.* Request timeout in milliseconds. |
 
 ---
 
 ## Interface `HealthStatus`
 
-Returned by the `client.healthCheck()` method. This object provides a snapshot of the server's availability and the status of internal memory managers.
+Returned by `client.healthCheck()`.
 
 | Property | Type | Description |
 | :--- | :--- | :--- |
-| `status` | `string` | Overall health status (e.g., `'healthy'`). |
-| `service` | `string` | The service identifier or name. |
-| `version` | `string` | The current server version string. |
-| `memory_managers` | `object` | Status of internal managers: `episodic_memory` (boolean) and `profile_memory` (boolean). |
+| `status` | `string` | The current health state (e.g., "healthy"). |
+| `version` | `string` | The version of the MemMachine server. |
+| `uptime` | `number` | Server uptime in seconds. |
 
 ---
 
