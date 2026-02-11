@@ -30,54 +30,61 @@ The latest version of the SDK leverages a unified client structure. Instead of m
   </Step>
 
   <Step title="Initialize & Use">
-    Supply your `orgId` and `projectId` within the `metadata` object of your calls to maintain context.
+    Supply your `org_id` and `project_id` within the metadata context of your calls to maintain isolation.
 
     ```typescript
-    import { MemMachineClient } from '@memmachine/sdk';
+    import { MemMachineClient } from '@memmachine/client';
 
-    const client = new MemMachineClient({ apiKey: 'your_api_key' });
+    const client = new MemMachineClient({ api_key: 'your_api_key' });
 
-    // Active pattern: Direct client calls with metadata
+    // Scoped operation using Context
     await client.addEpisodicMemory({
       content: "User likes high-contrast UI.",
-      metadata: { orgId: "org_1", projectId: "proj_A", userId: "user_1" }
+      metadata: { org_id: "org_1", project_id: "proj_A", user_id: "user_1" }
     });
     ```
   </Step>
 </Steps>
 
-### API Reference
+---
+
+## API Reference
 
 Explore the detailed specifications for the SDK's classes and data models.
 
-### Classes
-<CardGroup cols={2}>
-  <Card title="MemMachineClient" icon="terminal" href="./classes/MemMachineClient">
-    **Active.** The main entry point for all memory and project operations.
-  </Card>
-  <Card title="API Error" icon="shield-alert" href="./classes/MemMachineAPIError">
-    **Active.** Custom error handling for API-specific responses.
-  </Card>
-</CardGroup>
-
 ### Interfaces & Types
-These define the shape of your interactions and the data returned by the SDK.
+These define the shape of your interactions and the data returned by the SDK. They are organized by the lifecycle of a typical implementation.
 
 <AccordionGroup>
-  <Accordion title="Configuration & Context" icon="gears">
-    - **[ClientOptions](./interfaces/ClientOptions)**: Initialization parameters.
-    - **[ProjectContext](./interfaces/ProjectContext)**: Metadata-scoping definitions (`orgId`, `projectId`).
-    - **[Project](./interfaces/Project)**: Full project object schema.
+  <Accordion title="1. Foundation (Context & Config)" icon="gears">
+    The essential building blocks for connecting and scoping your requests.
+    - **[ClientOptions](./interfaces/ClientOptions)**: Global client settings.
+    - **[ProjectContext](./interfaces/ProjectContext)**: Organization and Project scoping.
+    - **[MemoryContext](./interfaces/MemoryContext)**: User, Session, and Agent scoping.
   </Accordion>
   
-  <Accordion title="Operation Payloads" icon="input-cursor">
-    - **[AddMemoryOptions](./interfaces/AddMemoryOptions)**: Schema for episodic memory ingestion.
-    - **[SearchMemoryResult](./interfaces/SearchMemoryResult)**: Structure of semantic search hits.
+  <Accordion title="2. Operations (Input Parameters)" icon="input-cursor">
+    Interfaces used to define the "How" of your SDK method calls.
+    - **[CreateProjectOptions](./interfaces/CreateProjectOptions)**: Setup for new projects.
+    - **[AddMemoryOptions](./interfaces/AddMemoryOptions)**: Parameters for ingesting data.
+    - **[SearchMemoriesOptions](./interfaces/SearchMemoriesOptions)**: Filtering and threshold logic.
+    - **[ListMemoriesOptions](./interfaces/ListMemoriesOptions)**: Pagination and retrieval settings.
   </Accordion>
 
-  <Accordion title="Core Models" icon="database">
-    - **[Memory Structures](./interfaces/MemoryStructures)**: The base memory object properties.
-    - **[Types](./interfaces/Types)**: Global enums for roles and memory types.
+  <Accordion title="3. Data Models (Results & Units)" icon="database">
+    The structure of the data you receive back from the server.
+    - **[Project](./interfaces/Project)**: Full project configuration data.
+    - **[AddMemoryResult](./interfaces/AddMemoryResult)**: Confirmation and UIDs for new entries.
+    - **[SearchMemoriesResult](./interfaces/SearchMemoriesResult)**: Ranked search results wrapper.
+    - **[EpisodicMemory](./interfaces/EpisodicMemory)**: Individual interaction records.
+    - **[SemanticMemory](./interfaces/SemanticMemory)**: Extracted knowledge facts.
+    - **[HealthStatus](./interfaces/HealthStatus)**: Server heartbeat and version info.
+  </Accordion>
+
+  <Accordion title="4. Vocabulary (Shared Types)" icon="book">
+    Enums and union types used across the SDK.
+    - **[MemoryProducerRole](./types/MemoryProducerRole)**: Definitions for User, Assistant, and System roles.
+    - **[MemoryType](./types/MemoryType)**: Classifications for memory storage.
   </Accordion>
 </AccordionGroup>
 
@@ -85,12 +92,9 @@ These define the shape of your interactions and the data returned by the SDK.
 
 ## Contributing & Development
 
-If you are looking to contribute to the SDK or run local tests, follow these steps:
-
 1. **Install Dependencies:** `npm install`
 2. **Build the Package:** `npm run build`
 3. **Run Unit Tests:** `npm run test`
-4. **Try the Demo:** Execute `npm run example` to see a local script in action.
 
 ## License
 MemMachine Typescript SDK is open-source software licensed under the [Apache-2.0 License](https://www.apache.org/licenses/LICENSE-2.0).
