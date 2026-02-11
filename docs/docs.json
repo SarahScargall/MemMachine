@@ -111,7 +111,9 @@
               "group": "Classes",
               "pages": [
                 "api_reference/ts-rest/classes/MemMachineClient",
-                "api_reference/ts-rest/classes/MemMachineAPIError"
+                "api_reference/ts-rest/classes/MemMachineAPIError",
+                "api_reference/ts-rest/classes/MemMachineMemory",
+                "api_reference/ts-rest/classes/MemMachineProject"
               ]
             },
             {
