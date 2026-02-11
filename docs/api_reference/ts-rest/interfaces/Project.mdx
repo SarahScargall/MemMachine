@@ -1,46 +1,31 @@
 ---
-title: "The Workspace"
-description: "Project data models and metadata configuration for MemMachine workspaces."
+title: "Project"
+description: "The complete data model for a MemMachine project workspace."
 ---
 
-## Interface `Project`
+## Overview
 
-The `Project` object represents the high-level container for your data. It defines the identity and the specific AI models (embedder/reranker) used for semantic vectorization and retrieval within a workspace.
+The `Project` interface represents the full metadata and configuration state of a project. It is the primary return type for the `getDetails()` method.
 
-| Property | Type | Description |
-| :--- | :--- | :--- |
-| `id` | `string` | **Required.** The unique identifier for the project. |
-| `orgId` | `string` | **Required.** The organization ID this project belongs to. |
-| `description` | `string` | *Optional.* A brief summary of the project's purpose. |
-| `config` | `ProjectConfig` | *Optional.* Technical settings for the project's AI engine. |
+---
 
-### `ProjectConfig`
+## Properties
 
 | Property | Type | Description |
 | :--- | :--- | :--- |
-| `embedder` | `string` | The model used for generating semantic embeddings. |
-| `reranker` | `string` | The model used for optimizing search results. |
+| `org_id` | `string` | The unique identifier of the organization owning the project. |
+| `project_id` | `string` | The unique identifier of the project itself. |
+| `description` | `string` | A human-readable summary of the project. |
+| `config` | `object` | The active AI configuration, including `embedder` and `reranker` model strings. |
 
 ---
 
 ## Usage Example
 
-In the current SDK, project data is typically retrieved through the primary client. The following example demonstrates how to list and inspect projects using the updated naming conventions.
-
 ```typescript
-import { MemMachineClient, Project } from '@memmachine/sdk';
+const project = client.project('customer-support');
+const details = await project.getDetails();
 
-const client = new MemMachineClient({ 
-  apiKey: process.env.MEMMACHINE_API_KEY 
-});
-
-// Retrieve all projects associated with your API key
-const projects: Project[] = await client.getProjects();
-
-projects.forEach((project) => {
-  console.log(`Project ID: ${project.id}`);
-  console.log(`Embedder: ${project.config?.embedder ?? 'Default'}`);
-});
+console.log(`Project: ${details.description}`);
+console.log(`Using Embedder: ${details.config.embedder}`);
 ```
-
-<Note title="Property Refactor"> The properties project_id and org_id have been updated to id and orgId to align with the standard TypeScript camelCase convention used throughout the current SDK. </Note>

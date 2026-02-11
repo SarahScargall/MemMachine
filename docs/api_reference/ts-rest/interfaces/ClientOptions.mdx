@@ -1,54 +1,35 @@
 ---
-title: "Client Options"
-description: "Configuration settings for the MemMachineClient."
+title: "ClientOptions"
+description: "Configuration settings for initializing the MemMachineClient."
 ---
 
-## Interface `ClientOptions`
+## Overview
 
-| Property | Type | Description |
-| :--- | :--- | :--- |
-| `apiKey` | `string` | **Required.** Your MemMachine API key for authentication. |
-| `baseUrl` | `string` | *Optional.* The URL of your MemMachine instance. Defaults to production. |
-| `timeout` | `number` | *Optional.* Request timeout in milliseconds. |
+The `ClientOptions` interface is used to configure the global behavior of the `MemMachineClient`, including authentication and network settings.
 
 ---
 
-## Interface `HealthStatus`
-
-Returned by `client.healthCheck()`.
+## Properties
 
 | Property | Type | Description |
 | :--- | :--- | :--- |
-| `status` | `string` | The current health state (e.g., "healthy"). |
-| `version` | `string` | The version of the MemMachine server. |
-| `uptime` | `number` | Server uptime in seconds. |
+| `api_key` | `string` | **Optional.** The API key used to authenticate requests. |
+| `base_url` | `string` | **Optional.** The root URL of your MemMachine server instance. |
+| `max_retries` | `number` | **Optional.** The number of times to attempt a request before failing. |
+| `timeout` | `number` | **Optional.** The maximum duration (in ms) to wait for a server response. |
 
 ---
 
 ## Usage Example
 
-Use `ClientOptions` to connect, then use `HealthStatus` to verify your environment is ready.
-
 ```typescript
-import { MemMachineClient } from '@memmachine/sdk';
+import { MemMachineClient, ClientOptions } from '@memmachine/client';
 
-const client = new MemMachineClient({ 
-  base_url: 'your-base-url',
-  api_key: 'your_secret_key'
-});
+const config: ClientOptions = {
+  api_key: 'mm_live_...',
+  base_url: '[https://api.memmachine.ai](https://api.memmachine.ai)',
+  timeout: 5000
+};
 
-async function checkConnection() {
-  try {
-    const health = await client.healthCheck();
-    
-    if (health.status === 'healthy') {
-      console.log(`Connected to ${health.service} v${health.version}`);
-      console.log(`Episodic Manager: ${health.memory_managers.episodic_memory ? 'UP' : 'DOWN'}`);
-    }
-  } catch (error) {
-    console.error("Connection failed:", error.message);
-  }
-}
-
-checkConnection();
+const client = new MemMachineClient(config);
 ```

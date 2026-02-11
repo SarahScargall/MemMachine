@@ -1,53 +1,30 @@
 ---
-title: "Project Context"
-description: "Defining organizational and project identifiers for metadata-driven scoping."
+title: "ProjectContext"
+description: "Core identifiers used to scope operations to specific organizations and projects."
 ---
 
-## Interface `ProjectContext`
+## Overview
 
-The `ProjectContext` interface is the core mechanism for data isolation in MemMachine. In the latest SDK, this object is passed as `metadata` to nearly every method in the `MemMachineClient` to ensure operations are scoped to the correct workspace.
-
-| Property | Type | Description |
-| :--- | :--- | :--- |
-| `orgId` | `string` | **Required.** The unique identifier for your organization. |
-| `projectId` | `string` | **Required.** The unique identifier for the specific project. |
-| `userId` | `string` | *Optional.* Identifies the specific end-user associated with the memory. |
-| `agentId` | `string` | *Optional.* Identifies the AI agent or bot instance. |
+`ProjectContext` is the primary scoping mechanism in the SDK. It ensures that memories added or searched are isolated within the correct organizational and project boundaries.
 
 ---
 
-## Interface `CreateProjectOptions`
-
-These options are used specifically when initializing a new project on the server via `client.createProject()`[cite: 56].
+## Properties
 
 | Property | Type | Description |
 | :--- | :--- | :--- |
-| `description` | `string` | *Optional.* A brief summary or name for the project[cite: 58]. |
-| `embedder` | `string` | *Optional.* Specify the embedding model (e.g., `openai:text-embedding-3-small`)[cite: 59]. |
-| `reranker` | `string` | *Optional.* Specify the reranker model for optimizing search results[cite: 60]. |
+| `org_id` | `string` | The unique identifier for your organization. |
+| `project_id` | `string` | The unique identifier for the specific project workspace. |
 
 ---
 
 ## Usage Example
 
-The example below demonstrates how to use `ProjectContext` to scope a memory search directly through the client[cite: 61, 62].
-
 ```typescript
-import { MemMachineClient, ProjectContext } from '@memmachine/sdk';
+import { ProjectContext } from '@memmachine/client';
 
-const client = new MemMachineClient({ apiKey: process.env.MEMMACHINE_API_KEY });
-
-// 1. Define the Metadata Context
 const context: ProjectContext = {
-  orgId: 'acme_corp',
-  projectId: 'customer_support_bot',
-  userId: 'user_882'
+  org_id: 'acme_corp',
+  project_id: 'customer_support_bot'
 };
-
-// 2. Pass context directly to memory methods
-const memories = await client.searchProfileMemory({
-  query: "What is the user's favorite color?",
-  metadata: context
-});
 ```
-<Tip> Pro-Tip: Always include a userId in your ProjectContext when dealing with user-specific data to enable personalized memory retrieval. </Tip>

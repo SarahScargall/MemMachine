@@ -1,38 +1,49 @@
 ---
-title: "Add Memory Options"
-description: "Configuration for ingesting new episodic memories into the memory engine."
+title: "AddMemoryOptions"
+description: "Configuration options for ingesting new memories into the engine."
 ---
 
-## Interface `AddMemoryOptions`
+## Overview
 
-The `AddMemoryOptions` interface defines the payload for the `client.addEpisodicMemory()` method. It requires both the content of the memory and the metadata context for proper isolation.
+The `AddMemoryOptions` interface defines the optional configuration used when adding a new memory via the `MemMachineMemory.add()` method. It allows for detailed categorization, role assignment, and metadata tagging.
+
+---
+
+## Properties
+
+All properties in this interface are optional, allowing for flexible memory ingestion depending on your use case.
 
 | Property | Type | Description |
 | :--- | :--- | :--- |
-| `content` | `string` | **Required.** The raw text content of the interaction or fact to be stored. |
-| `metadata` | [`ProjectContext`](./ProjectContext) | **Required.** Scoping identifiers including `orgId` and `projectId`. |
-| `role` | `MemoryProducerRole` | *Optional.* The role of the entity that produced the memory (e.g., `user`, `assistant`, or `system`). |
+| `producer` | `string` | The ID of the entity that produced the memory. |
+| `role` | [`MemoryProducerRole`](../types/MemoryProducerRole) | The role of the producer (e.g., `user`, `assistant`). |
+| `produced_for` | `string` | The ID of the target entity the memory was produced for. |
+| `episode_type` | `string` | A custom classification for the type of interaction episode. |
+| `timestamp` | `string` | The specific time the memory occurred (ISO 8601 string). |
+| `metadata` | `Record<string, string>` | Key-value pairs for additional custom contextual data. |
+| `types` | [`MemoryType[]`](../types/MemoryType) | The classification of memories to be created (e.g., `episodic`). |
 
+---
 
 ## Usage Example
 
-The following example demonstrates how to structure the options when adding a memory directly through the `MemMachineClient`.
+The following example shows how to use `AddMemoryOptions` to provide context when saving a user preference.
 
 ```typescript
-import { MemMachineClient, AddMemoryOptions } from '@memmachine/sdk';
+import { AddMemoryOptions } from '@memmachine/client';
 
-const client = new MemMachineClient({ apiKey: process.env.MEMMACHINE_API_KEY });
+const memory = project.memory();
 
-const memoryPayload: AddMemoryOptions = {
-  content: "The user expressed a strong preference for TypeScript over vanilla JavaScript.",
+const options: AddMemoryOptions = {
+  role: 'user',
+  episode_type: 'preference_update',
   metadata: {
-    orgId: "dev_studio_01",
-    projectId: "coding_assistant_v2",
-    userId: "dev_user_77"
-  },
-  role: "user"
+    feature: 'dark_mode',
+    source: 'settings_ui'
+  }
 };
 
-await client.addEpisodicMemory(memoryPayload);
+await memory.add('User toggled dark mode to "on" for the dashboard.', options);
 ```
-<Note> Ensure the metadata object contains a valid projectId. Memories added without a project context will fail validation to prevent data leakage between workspaces. </Note>
+
+<Tip> While `metadata` is optional, using it consistently is recommended for advanced filtering during semantic searches. </Tip>
