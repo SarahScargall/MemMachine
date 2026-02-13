@@ -28,8 +28,8 @@ description: "The data model representing a chronological interaction or event."
 ## Usage Example
 
 ```typescript
-// Usually received as part of a SearchMemoriesResult
-const firstHit = searchResponse.content[0];
+const { short_term_memory } = searchResponse.content.episodic_memory;
+const firstHit = short_term_memory.episodes[0];
 
 console.log(`[${firstHit.score}] ${firstHit.producer_role}: ${firstHit.content}`);
 ```

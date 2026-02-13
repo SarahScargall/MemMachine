@@ -23,8 +23,8 @@ The `Project` interface represents the full metadata and configuration state of 
 ## Usage Example
 
 ```typescript
-const project = client.project('customer-support');
-const details = await project.getDetails();
+const project = client.project({ org_id: 'customer-support', project_id: 'customer-support' });
+const details = await project.get();
 
 console.log(`Project: ${details.description}`);
 console.log(`Using Embedder: ${details.config.embedder}`);

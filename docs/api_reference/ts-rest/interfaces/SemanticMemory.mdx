@@ -25,12 +25,8 @@ description: "The data model representing extracted knowledge or categorical fac
 ## Usage Example
 
 ```typescript
-const fact: SemanticMemory = {
-  category: 'user_preferences',
-  feature_name: 'favorite_language',
-  value: 'TypeScript',
-  tag: 'coding',
-  set_id: 'user_99_facts',
-  metadata: ['source_uid_123']
-};
+const knowledge = searchResponse.content.semantic_memory;
+
+console.log('Knowledge points:');
+console.dir(knowledge , { depth: null });
 ```

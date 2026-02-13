@@ -21,11 +21,9 @@ The `SearchMemoriesResult` interface encapsulates the outcome of a semantic sear
 ## Usage Example
 
 ```typescript
-const searchResponse = await client.memory().search('What is the user's favorite color?');
+cconst searchResponse = await memory.search('What is the user's favorite color?');
 
-if (searchResponse.status === 200) {
-  searchResponse.content.forEach(memory => {
-    print(`Match found: ${memory.content}`);
-  });
+if (searchResponse.status === 0) {
+console.dir(searchResponse.content, { depth: null })
 }
 ```
