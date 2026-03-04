@@ -399,6 +399,11 @@ generate_config_for_provider() {
             print "    embedder: " embedder_name
             next
         }
+        # Update llm_model reference in long_term_memory
+        if (in_long_term && /^    llm_model:/) {
+            print "    llm_model: " model_name
+            next
+        }
         # Update llm_model reference in short_term_memory
         if (in_short_term && /^    llm_model:/) {
             print "    llm_model: " model_name
@@ -767,7 +772,7 @@ start_services() {
         # Pull failed
         if echo "$pull_output" | grep -q 'manifest unknown'; then
             # This is the expected error for local-only images
-            print_warning "Image '${target_image}' not found in Docker Hub registry (manifest unknown). Assuming local image."
+            print_info "Image '${target_image}' not found in Docker Hub registry (manifest unknown). Assuming local image."
         else
             # Some other error (auth, network, etc) - show it!
             print_error "Docker pull failed with unexpected error:"
